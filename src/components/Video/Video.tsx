@@ -1,4 +1,3 @@
-import { GridSize } from '@material-ui/core'
 import { AgoraVideoPlayer } from 'agora-rtc-react'
 import {
   IAgoraRTCRemoteUser,
@@ -15,11 +14,6 @@ interface IVideoProps {
 
 export default function Video(props: IVideoProps) {
   const { users, tracks } = props
-  const [gridSpacing, setGridSpacing] = useState<GridSize>(12)
-
-  useEffect(() => {
-    setGridSpacing(Math.max(Math.floor(12 / (users.length + 1)), 4) as GridSize)
-  }, [users, tracks])
 
   return (
     <div className='video-list'>

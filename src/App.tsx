@@ -3,8 +3,6 @@ import './App.scss'
 import VideoCall from './components/VideoCall/VideoCall'
 
 function App() {
-  // return <VideoCall />
-
   const [inCall, setInCall] = useState(false)
 
   return (
@@ -13,7 +11,9 @@ function App() {
         {inCall ? (
           <VideoCall setInCall={setInCall} />
         ) : (
-          <button onClick={() => setInCall(true)}>Join Call</button>
+          <button onClick={() => setInCall(true)} className=''>
+            Join Call
+          </button>
         )}
       </div>
     </div>
