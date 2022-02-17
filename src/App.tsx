@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './App.scss'
+import Messaging from './components/Messaging/Messaging'
 import VideoCall from './components/VideoCall/VideoCall'
 
 function App() {
@@ -15,6 +16,9 @@ function App() {
             Join Call
           </button>
         )}
+      </div>
+      <div className='messaging-area'>
+        <Messaging />
       </div>
     </div>
   )
