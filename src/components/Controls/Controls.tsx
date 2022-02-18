@@ -6,12 +6,16 @@ import {
   BsMicMuteFill,
 } from 'react-icons/bs'
 import { ImExit } from 'react-icons/im'
+import { FaStop } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 import { useClient } from '../../config'
+import clsx from 'classnames'
 import './style.scss'
 
 export default function Controls(props: any) {
+  const navigate = useNavigate()
   const client = useClient()
-  const { tracks, setStart, setInCall } = props
+  const { tracks, setStart, setInCall, stopStream } = props
   const [trackState, setTrackState] = useState({ video: true, audio: true })
 
   const mute = async (type: string) => {
@@ -35,28 +39,34 @@ export default function Controls(props: any) {
     tracks[1].close()
     setStart(false)
     setInCall(false)
+    navigate('/room')
   }
 
+  const iconSize: string = 'text-2xl'
+
   return (
-    <div className='controls-wrapper'>
-      <div>
+    <div className='w-full'>
+      <div className='flex items-center gap-4 mx-auto w-fit'>
         <button onClick={() => mute('audio')}>
-          {trackState.audio ? <BsMicFill /> : <BsMicMuteFill />}
-        </button>
-      </div>
-      <div>
-        <button onClick={() => mute('video')}>
-          {trackState.video ? (
-            <BsFillCameraVideoFill />
+          {trackState.audio ? (
+            <BsMicFill className={iconSize} />
           ) : (
-            <BsFillCameraVideoOffFill />
+            <BsMicMuteFill className={iconSize} />
           )}
         </button>
-      </div>
-      <div>
+        <button onClick={() => mute('video')}>
+          {trackState.video ? (
+            <BsFillCameraVideoFill className={iconSize} />
+          ) : (
+            <BsFillCameraVideoOffFill className={iconSize} />
+          )}
+        </button>
         <button onClick={leaveChannel}>
-          {/* Leave */}
-          <ImExit />
+          <ImExit className={iconSize} />
+        </button>
+        <button onClick={stopStream} className='flex items-center'>
+          <FaStop className={clsx(iconSize, 'mr-1')} />
+          Stop Stream
         </button>
       </div>
     </div>
