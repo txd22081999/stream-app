@@ -1,8 +1,8 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { appCertificate, appId, RTM_TOKEN_BUILDER_URL } from '../../config'
 import { GoPrimitiveDot } from 'react-icons/go'
+import { appCertificate, appId } from '../../config'
+import { RTMTokenAxios } from '../../config/axios-config'
 import { useStore } from '../../store'
 import { getTokenExpireTime } from '../../utils/token-expire-time'
 
@@ -19,10 +19,8 @@ const Messaging = () => {
   const [isJoined, setIsJoined] = useState<boolean>(false)
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
-  // const uid: string = 'user' + Math.floor(Math.random() * 1000).toString()
   const [members, setMembers] = useState<string[]>([])
   const { userName } = useStore()
-  //   const [channel, setChannel] = useState<
 
   console.log(userName)
 
@@ -113,12 +111,14 @@ const Messaging = () => {
     try {
       const {
         data: { token: clientToken },
-      } = await axios.post(RTM_TOKEN_BUILDER_URL, {
-        appId,
-        appCertificate,
-        uid: userName,
-        role: 2,
-        privilegeExpiredTs: getTokenExpireTime(),
+      } = await RTMTokenAxios.request({
+        data: {
+          appId,
+          appCertificate,
+          uid: userName,
+          role: 2,
+          privilegeExpiredTs: getTokenExpireTime(),
+        },
       })
       console.log('token', clientToken)
 
@@ -219,7 +219,12 @@ const Messaging = () => {
           </div>
         </>
       ) : (
-        <button onClick={loginChat}>Join Chat</button>
+        <button
+          onClick={loginChat}
+          className='bg-green-300 px-4 py-1 rounded-lg'
+        >
+          Join Chat
+        </button>
       )}
     </div>
   )

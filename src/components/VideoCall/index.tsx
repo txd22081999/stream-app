@@ -1,13 +1,12 @@
 import { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
-import axios from 'axios'
 import { useEffect, useState } from 'react'
 import {
   appCertificate,
   appId,
-  RTC_TOKEN_BUILDER_URL,
   useClient,
   useMicrophoneAndCameraTracks,
 } from '../../config'
+import { RTCTokenAxios } from '../../config/axios-config'
 import { ERole } from '../../enum'
 import { useStore } from '../../store'
 import { getTokenExpireTime } from '../../utils/token-expire-time'
@@ -25,8 +24,8 @@ const VideoCall = (props: any) => {
 
   useEffect(() => {
     let initialize = async (roomName: string) => {
-      // client.setClientRole('host')
-      client.setClientRole('audience')
+      client.setClientRole('host')
+      // client.setClientRole('audience')
 
       client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType)
@@ -62,8 +61,12 @@ const VideoCall = (props: any) => {
 
         if (!token) {
           token = await generateRtmToken(roomName)
+          setRtcToken(token)
         }
-        await client.join(appId, roomName, token, uid)
+        console.log('token', token)
+
+        // await client.join(appId, roomName, token, uid)
+        await client.join(appId, roomName, token)
       } catch (error) {
         console.log('error')
       }
@@ -82,21 +85,22 @@ const VideoCall = (props: any) => {
   }, [roomName, client, ready, tracks])
 
   async function generateRtmToken(roomName: string) {
-    const uid = Math.floor(Math.random() * 999999)
-    setUid(uid)
+    // const uid = Math.floor(Math.random() * 999999)
+    // setUid(uid)
 
     const {
       data: { token },
-    } = await axios.post(RTC_TOKEN_BUILDER_URL, {
-      appId,
-      appCertificate,
-      channelName: roomName,
-      uid: uid,
-      role: ERole.PUBLISHER,
-      privilegeExpiredTs: getTokenExpireTime(),
+    } = await RTCTokenAxios.request({
+      data: {
+        appId,
+        appCertificate,
+        channelName: roomName,
+        uid: 0,
+        role: ERole.PUBLISHER,
+        privilegeExpiredTs: getTokenExpireTime(),
+      },
     })
 
-    setRtcToken(token)
     return token
   }
 

@@ -6,9 +6,13 @@ import Rooms from './components/Rooms'
 import Stream from './components/Stream'
 import { useStore } from './store'
 
-function App() {
+const App = () => {
   const { userName } = useStore()
   const isAuthenticated = !!userName
+
+  console.log('Here')
+
+  console.log(process.env.REACT_APP_API_KEY)
 
   return (
     <BrowserRouter>
