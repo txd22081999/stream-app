@@ -1,25 +1,33 @@
+import { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
+import axios from 'axios'
 import { useEffect, useState } from 'react'
 import {
+  appCertificate,
   appId,
-  channelName,
-  token,
+  RTC_TOKEN_BUILDER_URL,
   useClient,
   useMicrophoneAndCameraTracks,
 } from '../../config'
+import { ERole } from '../../enum'
+import { useStore } from '../../store'
+import { getTokenExpireTime } from '../../utils/token-expire-time'
 import Controls from '../Controls/Controls'
-import Video from '../Video/Video'
-import { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
+import Video from '../Video'
 import './style.scss'
 
-export default function VideoCall(props: any) {
+const VideoCall = (props: any) => {
   const { setInCall } = props
+  const { userName, roomName, rtcToken, uid, setRtcToken, setUid } = useStore()
   const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([])
   const [start, setStart] = useState(false)
   const client = useClient()
   const { ready, tracks } = useMicrophoneAndCameraTracks()
 
   useEffect(() => {
-    let init = async (name: string) => {
+    let initialize = async (roomName: string) => {
+      // client.setClientRole('host')
+      client.setClientRole('audience')
+
       client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType)
         if (mediaType === 'video') {
@@ -50,7 +58,12 @@ export default function VideoCall(props: any) {
       })
 
       try {
-        await client.join(appId, name, token, null)
+        let token: string = rtcToken
+
+        if (!token) {
+          token = await generateRtmToken(roomName)
+        }
+        await client.join(appId, roomName, token, uid)
       } catch (error) {
         console.log('error')
       }
@@ -61,12 +74,31 @@ export default function VideoCall(props: any) {
 
     if (ready && tracks) {
       try {
-        init(channelName)
+        initialize(roomName)
       } catch (error) {
         console.log(error)
       }
     }
-  }, [channelName, client, ready, tracks])
+  }, [roomName, client, ready, tracks])
+
+  async function generateRtmToken(roomName: string) {
+    const uid = Math.floor(Math.random() * 999999)
+    setUid(uid)
+
+    const {
+      data: { token },
+    } = await axios.post(RTC_TOKEN_BUILDER_URL, {
+      appId,
+      appCertificate,
+      channelName: roomName,
+      uid: uid,
+      role: ERole.PUBLISHER,
+      privilegeExpiredTs: getTokenExpireTime(),
+    })
+
+    setRtcToken(token)
+    return token
+  }
 
   return (
     <div>
@@ -81,3 +113,5 @@ export default function VideoCall(props: any) {
     </div>
   )
 }
+
+export default VideoCall

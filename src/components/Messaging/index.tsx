@@ -1,13 +1,16 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { appCertificate, appId, TOKEN_BUILDER_URL } from '../../config'
+import { appCertificate, appId, RTM_TOKEN_BUILDER_URL } from '../../config'
 import { GoPrimitiveDot } from 'react-icons/go'
+import { useStore } from '../../store'
+import { getTokenExpireTime } from '../../utils/token-expire-time'
 
 let client: RtmClient | null = null
 let channel: RtmChannel | null = null
 
 interface IMessage {
+  id: number
   sender: string
   content: string
 }
@@ -16,9 +19,12 @@ const Messaging = () => {
   const [isJoined, setIsJoined] = useState<boolean>(false)
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
-  const uid: string = 'user' + Math.floor(Math.random() * 1000).toString()
+  // const uid: string = 'user' + Math.floor(Math.random() * 1000).toString()
   const [members, setMembers] = useState<string[]>([])
+  const { userName } = useStore()
   //   const [channel, setChannel] = useState<
+
+  console.log(userName)
 
   useEffect(() => {
     initiate()
@@ -77,16 +83,18 @@ const Messaging = () => {
       console.log(message)
       console.log(memberId)
       console.log(messagePros)
-
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: memberId, content: (message as RtmTextMessage).text },
+        {
+          id: messagePros.serverReceivedTs,
+          sender: memberId,
+          content: (message as RtmTextMessage).text,
+        },
       ])
     })
 
     await channel.join()
     await getChannelMembers()
-    // await joinChannel()
   }
 
   async function getChannelMembers() {
@@ -103,21 +111,18 @@ const Messaging = () => {
     }
 
     try {
-      const expirationTimeInSeconds = 3600
-      const currentTimestamp = Math.floor(Date.now() / 1000)
-      const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds
       const {
         data: { token: clientToken },
-      } = await axios.post(TOKEN_BUILDER_URL, {
+      } = await axios.post(RTM_TOKEN_BUILDER_URL, {
         appId,
         appCertificate,
-        uid,
+        uid: userName,
         role: 2,
-        privilegeExpiredTs,
+        privilegeExpiredTs: getTokenExpireTime(),
       })
       console.log('token', clientToken)
 
-      await client.login({ uid, token: clientToken })
+      await client.login({ uid: userName, token: clientToken })
       setIsJoined(true)
     } catch (error) {
       console.log(error)
@@ -157,8 +162,6 @@ const Messaging = () => {
       console.log('Channel is not available')
       return
     }
-    // await channel.sendMessage({ text: msg })
-
     await channel.sendMessage({ text: msg })
     console.log('sent', msg)
   }
@@ -172,7 +175,7 @@ const Messaging = () => {
       await sendMessage(inputMessage)
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: uid, content: inputMessage },
+        { id: Date.now(), sender: userName, content: inputMessage },
       ])
       setInputMessage('')
     }
@@ -200,14 +203,14 @@ const Messaging = () => {
           <div className='mt-5'>
             <div>Online</div>
             {members.map((member) => (
-              <div className='flex items-center'>
+              <div key={member} className='flex items-center'>
                 <GoPrimitiveDot className='text-green-400' />
                 <p>{member}</p>
               </div>
             ))}
             <div className='message-list mt-5'>
-              {messages.map(({ sender, content }) => (
-                <p className='mb-2'>
+              {messages.map(({ id, sender, content }) => (
+                <p key={id} className='mb-2'>
                   <span className='font-semibold mr-2'>{sender}</span>{' '}
                   <span>{content}</span>
                 </p>
