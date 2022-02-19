@@ -1,10 +1,10 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
 import React, { useEffect, useState } from 'react'
 import { GoPrimitiveDot } from 'react-icons/go'
-import { appCertificate, appId } from '../../config'
-import { RTMTokenAxios } from '../../config/axios-config'
-import { useStore } from '../../store'
-import { getTokenExpireTime } from '../../utils/token-expire-time'
+import { appCertificate, appId } from 'constant'
+import { RTMTokenAxios } from 'config/axios-config'
+import { useUserStore } from 'store'
+import { getTokenExpireTime } from 'utils/token-expire-time'
 
 let client: RtmClient | null = null
 let channel: RtmChannel | null = null
@@ -20,7 +20,7 @@ const Messaging = () => {
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
   const [members, setMembers] = useState<string[]>([])
-  const { userName } = useStore()
+  const { userName } = useUserStore()
 
   console.log(userName)
 

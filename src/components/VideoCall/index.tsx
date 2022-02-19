@@ -1,42 +1,41 @@
 import { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
 import { useEffect, useState } from 'react'
-import {
-  appCertificate,
-  appId,
-  useClient,
-  useMicrophoneAndCameraTracks,
-} from '../../config'
-import { RTCTokenAxios } from '../../config/axios-config'
-import { ERole } from '../../enum'
-import { useStore } from '../../store'
-import { getTokenExpireTime } from '../../utils/token-expire-time'
-import Controls from '../Controls/Controls'
-import Video from '../Video'
+import { useClient, useMicrophoneAndCameraTracks } from 'config'
+import { RTCTokenAxios } from 'config/axios-config'
+import { EClientRole, EUserRole } from 'enum'
+import { useRoomStore, useUserStore } from 'store'
+import { appId, appCertificate, videoConfig } from 'constant'
+import { getTokenExpireTime } from 'utils/token-expire-time'
+import Controls from 'components/Controls/Controls'
+import Video from 'components/Video'
 import './style.scss'
 
 const VideoCall = (props: any) => {
   const { setInCall } = props
-  const { userName, roomName, rtcToken, uid, setRtcToken, setUid } = useStore()
+  const { userName, rtcToken, uid, setRtcToken, setUid } = useUserStore()
+  const { roomName, roles } = useRoomStore()
   const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([])
   const [start, setStart] = useState(false)
   const client = useClient()
   const { ready, tracks } = useMicrophoneAndCameraTracks()
 
   useEffect(() => {
-    let initialize = async (roomName: string) => {
-      client.setClientRole('host')
-      // client.setClientRole('audience')
+    const initialize = async (roomName: string) => {
+      const roleByRoom = roles.find((item) => item.roomName === roomName)
+      if (videoConfig.mode === 'live' && roleByRoom) {
+        client.setClientRole(roleByRoom.role)
+      }
 
       client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType)
-        if (mediaType === 'video') {
-          setUsers((prevUsers) => {
-            return [...prevUsers, user]
-          })
-        }
-        if (mediaType === 'audio') {
-          user.audioTrack?.play()
-        }
+        // if (mediaType === 'video') {
+        //   setUsers((prevUsers) => {
+        //     return [...prevUsers, user]
+        //   })
+        // }
+        // if (mediaType === 'audio') {
+        //   user.audioTrack?.play()
+        // }
       })
 
       client.on('user-unpublished', (user, mediaType) => {
@@ -59,19 +58,22 @@ const VideoCall = (props: any) => {
       try {
         let token: string = rtcToken
 
-        if (!token) {
+        // if (!token) {
+        if (true) {
           token = await generateRtmToken(roomName)
           setRtcToken(token)
         }
-        console.log('token', token)
-
-        // await client.join(appId, roomName, token, uid)
         await client.join(appId, roomName, token)
       } catch (error) {
         console.log('error')
       }
 
-      if (tracks) await client.publish([tracks[0], tracks[1]])
+      // INFO: Only publish stream if client (user) is host
+      if (roleByRoom?.role === EClientRole.HOST && tracks) {
+        if (tracks) {
+          await client.publish([tracks[0], tracks[1]])
+        }
+      }
       setStart(true)
     }
 
@@ -85,9 +87,6 @@ const VideoCall = (props: any) => {
   }, [roomName, client, ready, tracks])
 
   async function generateRtmToken(roomName: string) {
-    // const uid = Math.floor(Math.random() * 999999)
-    // setUid(uid)
-
     const {
       data: { token },
     } = await RTCTokenAxios.request({
@@ -96,7 +95,7 @@ const VideoCall = (props: any) => {
         appCertificate,
         channelName: roomName,
         uid: 0,
-        role: ERole.PUBLISHER,
+        role: EUserRole.PUBLISHER,
         privilegeExpiredTs: getTokenExpireTime(),
       },
     })
@@ -106,6 +105,8 @@ const VideoCall = (props: any) => {
 
   return (
     <div>
+      <div>{JSON.stringify(roles)}</div>
+      <h2>Room: {roomName}</h2>
       <div className='video-container'>
         {start && tracks && <Video tracks={tracks} users={users} />}
       </div>

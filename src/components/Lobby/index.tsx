@@ -1,9 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useStore } from '../../store'
+import { useUserStore } from '../../store'
 
 const Lobby = () => {
-  const { setUserName } = useStore()
+  const { setUserName } = useUserStore()
   const navigate = useNavigate()
 
   function submitName(e: any) {

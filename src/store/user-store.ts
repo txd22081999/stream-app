@@ -4,8 +4,6 @@ import { persist } from 'zustand/middleware'
 interface IUserState {
   userName: string
   setUserName: (name: string) => void
-  roomName: string
-  setRoomName: (name: string) => void
   rtmToken: string
   setRtmToken: (token: string) => void
   rtcToken: string
@@ -14,13 +12,11 @@ interface IUserState {
   setUid: (uid: number) => void
 }
 
-const useStore = create(
+const useUserStore = create(
   persist(
     (set: SetState<IUserState>, get: GetState<IUserState>) => ({
       userName: '',
       setUserName: (name: string) => set(() => ({ userName: name })),
-      roomName: '',
-      setRoomName: (name: string) => set(() => ({ roomName: name })),
       rtmToken: '',
       setRtmToken: (token: string) => set(() => ({ rtcToken: token })),
       rtcToken: '',
@@ -35,4 +31,4 @@ const useStore = create(
   )
 )
 
-export default useStore
+export default useUserStore

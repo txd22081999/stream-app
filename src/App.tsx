@@ -4,10 +4,10 @@ import './App.scss'
 import Lobby from './components/Lobby'
 import Rooms from './components/Rooms'
 import Stream from './components/Stream'
-import { useStore } from './store'
+import { useUserStore } from './store'
 
 const App = () => {
-  const { userName } = useStore()
+  const { userName } = useUserStore()
   const isAuthenticated = !!userName
 
   console.log('Here')

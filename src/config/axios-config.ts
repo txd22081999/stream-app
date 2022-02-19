@@ -1,5 +1,9 @@
 import axios from 'axios'
-import { RTC_TOKEN_BUILDER_URL, RTM_TOKEN_BUILDER_URL } from '.'
+import {
+  API_ENDPOINT,
+  RTC_TOKEN_BUILDER_URL,
+  RTM_TOKEN_BUILDER_URL,
+} from '../constant'
 
 const RTCTokenAxios = axios.create({
   baseURL: RTC_TOKEN_BUILDER_URL,
@@ -10,6 +14,8 @@ const RTMTokenAxios = axios.create({
   method: 'POST',
 })
 const AgoraAxios = axios.create({
+  // baseURL: AGORA_ENDPOINT,
+  baseURL: API_ENDPOINT,
   auth: {
     username: process.env.REACT_APP_AGORA_CLIENT_ID!,
     password: process.env.REACT_APP_AGORA_CLIENT_PASSWORD!,

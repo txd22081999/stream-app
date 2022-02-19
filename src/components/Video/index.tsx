@@ -4,7 +4,6 @@ import {
   ICameraVideoTrack,
   IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng'
-import { useEffect, useState } from 'react'
 import './style.scss'
 
 interface IVideoProps {
@@ -27,7 +26,7 @@ export default function Video(props: IVideoProps) {
         users.map((user) => {
           if (user.videoTrack) {
             return (
-              <div>
+              <div key={user.uid}>
                 <AgoraVideoPlayer
                   videoTrack={user.videoTrack}
                   key={user.uid}
