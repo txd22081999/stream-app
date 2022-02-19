@@ -1,12 +1,38 @@
+import { avatarPlaceholder } from 'constant'
 import React, { useState } from 'react'
+import { GoPrimitiveDot } from 'react-icons/go'
+import { useRoomStore } from 'store'
 import Messaging from '../Messaging'
 import VideoCall from '../VideoCall'
 
 const Stream = () => {
   const [inCall, setInCall] = useState(false)
+  const { audiences } = useRoomStore()
 
   return (
-    <div className='flex gap-2'>
+    // <div className='stream-container grid grid-cols-[200px_minmax(900px,_1fr)_100px] gap-2'>
+    <div className='stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-2'>
+      <div className=''>
+        <h4 className='capitalize text-center py-3 font-medium '>
+          participants
+        </h4>
+
+        <div className=''>
+          {audiences.map((member) => (
+            <div key={member} className='flex items-center px-2 mb-3'>
+              {/* <GoPrimitiveDot className='text-green-400' /> */}
+              <img
+                src={avatarPlaceholder}
+                alt='avatar'
+                className='w-7 h-7 rounded-lg mr-1'
+              />
+              <p className='whitespace-nowrap overflow-hidden text-ellipsis'>
+                {member}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
       <div className='video-list-area'>
         <VideoCall setInCall={setInCall} />
         {/* {inCall ? (

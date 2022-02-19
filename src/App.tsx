@@ -4,19 +4,21 @@ import './App.scss'
 import Lobby from './components/Lobby'
 import Rooms from './components/Rooms'
 import Stream from './components/Stream'
+import { NavLink } from 'react-router-dom'
 import { useUserStore } from './store'
 
 const App = () => {
   const { userName } = useUserStore()
   const isAuthenticated = !!userName
 
-  console.log('Here')
-
-  console.log(process.env.REACT_APP_API_KEY)
-
   return (
     <BrowserRouter>
-      <div className='App h-full'>
+      <div className='App h-screen w-screen bg-black text-dark-white'>
+        <header className='w-full bg-gray flex justify-between items-center px-8 py-2'>
+          <h1 className='text-3xl font-bold tracking-wide'>Strm</h1>
+
+          <NavLink to='/'>Home</NavLink>
+        </header>
         <Routes>
           <Route path='/' element={<Lobby />} />
           {isAuthenticated && (

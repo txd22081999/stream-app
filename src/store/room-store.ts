@@ -1,5 +1,6 @@
 import { EClientRole } from 'enum'
-import { isEqual, unionWith } from 'lodash'
+import isEqual from 'lodash/isEqual'
+import unionWith from 'lodash/unionWith'
 import create, { GetState, SetState } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -26,6 +27,9 @@ interface IRoomState {
 
   roles: IClientRoleState[]
   addRole: (newRole: IClientRoleState) => void
+
+  audiences: string[]
+  setAudiences: (audiences: string[]) => void
 }
 
 const useRoomStore = create(
@@ -52,6 +56,9 @@ const useRoomStore = create(
 
           return { roles: roleList }
         }),
+
+      audiences: [] as string[],
+      setAudiences: (audiences: string[]) => set(() => ({ audiences })),
     }),
     {
       name: 'room-storage',

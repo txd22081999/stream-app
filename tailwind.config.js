@@ -3,7 +3,15 @@ module.exports = {
   purge: ['./public/**/*.html', './src/**/*.{js,jsx,ts,tsx}'],
   content: ['./src/**/*.{html,js}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        ['gray-custom']: '#18171B',
+        ['dark-white']: '#EDEDEF',
+        ['light-gray']: '#ABABB6',
+        input: '#464649',
+        // purple:
+      },
+    },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')],
 }

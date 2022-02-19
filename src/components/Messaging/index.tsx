@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { GoPrimitiveDot } from 'react-icons/go'
 import { appCertificate, appId } from 'constant'
 import { RTMTokenAxios } from 'config/axios-config'
-import { useUserStore } from 'store'
+import { useRoomStore, useUserStore } from 'store'
 import { getTokenExpireTime } from 'utils/token-expire-time'
+import { useRef } from 'react'
 
 let client: RtmClient | null = null
 let channel: RtmChannel | null = null
@@ -20,9 +21,9 @@ const Messaging = () => {
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
   const [members, setMembers] = useState<string[]>([])
+  const { setAudiences } = useRoomStore()
   const { userName } = useUserStore()
-
-  console.log(userName)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     initiate()
@@ -99,6 +100,7 @@ const Messaging = () => {
     const channelMembers = await channel?.getMembers()
     if (channelMembers) {
       setMembers(channelMembers)
+      setAudiences(channelMembers)
     }
   }
 
@@ -171,7 +173,10 @@ const Messaging = () => {
   }
 
   async function onInputPress(e: any) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const message: string = inputMessage.trim()
+
+      if (!message) return
       await sendMessage(inputMessage)
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -186,37 +191,45 @@ const Messaging = () => {
     await logoutChat()
   }
 
+  function textAreaAdjust() {
+    if (!inputRef.current) return
+    const element = inputRef.current as any
+    console.log(element.scrollHeight)
+    console.log(element.style.height)
+    // ;(inputRef.current as any).style.height = '20px'
+    // if(scrollHeight >)
+    // element.style.height = `${25 + element.scrollHeight}px`
+    // element.style.height = "1px";
+    // element.style.height = (25+element.scrollHeight)+"px";
+  }
+
   return (
-    <div>
+    <div className='overflow-hidden flex flex-col mt-5 h-full w-full py-2'>
       {isJoined ? (
         <>
-          <div>
-            <input
-              type='text'
-              placeholder='Type a message...'
+          <div className='message-list mt-1 flex-1'>
+            {messages.map(({ id, sender, content }) => (
+              <p key={id} className='mb-[6px] text-sm'>
+                <span className='font-semibold text-green-300'>{sender}</span>
+                <span className='mr-[6px] ml-[1px]'>:</span>
+                <span>{content}</span>
+              </p>
+            ))}
+          </div>
+
+          <div className='bg-input rounded-lg py-3 px-4'>
+            <textarea
+              ref={inputRef}
+              placeholder='Send a message'
               onChange={onInputChange}
               onKeyDown={onInputPress}
+              onKeyUp={textAreaAdjust}
               value={inputMessage}
+              className='text-sm w-full bg-transparent min-h-[10px] outline-none scrollbar placeholder:text-gray-300 resize-none scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin scrollbar-thumb-rounded-md'
             />
-            <button onClick={cleanup}>Leave Chat</button>
           </div>
-          <div className='mt-5'>
-            <div>Online</div>
-            {members.map((member) => (
-              <div key={member} className='flex items-center'>
-                <GoPrimitiveDot className='text-green-400' />
-                <p>{member}</p>
-              </div>
-            ))}
-            <div className='message-list mt-5'>
-              {messages.map(({ id, sender, content }) => (
-                <p key={id} className='mb-2'>
-                  <span className='font-semibold mr-2'>{sender}</span>{' '}
-                  <span>{content}</span>
-                </p>
-              ))}
-            </div>
-          </div>
+
+          <button onClick={cleanup}>Leave Chat</button>
         </>
       ) : (
         <button
