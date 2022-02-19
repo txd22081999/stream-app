@@ -6,7 +6,7 @@ import { EClientRole, EUserRole } from 'enum'
 import { useRoomStore, useUserStore } from 'store'
 import { appId, appCertificate, videoConfig } from 'constant'
 import { getTokenExpireTime } from 'utils/token-expire-time'
-import Controls from 'components/Controls/Controls'
+import Controls from 'components/Controls'
 import Video from 'components/Video'
 import './style.scss'
 
@@ -28,6 +28,7 @@ const VideoCall = (props: any) => {
 
       client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType)
+
         // if (mediaType === 'video') {
         //   setUsers((prevUsers) => {
         //     return [...prevUsers, user]
@@ -36,6 +37,16 @@ const VideoCall = (props: any) => {
         // if (mediaType === 'audio') {
         //   user.audioTrack?.play()
         // }
+      })
+
+      client.on('stream-type-changed', (uid, streamType) => {
+        console.log(uid, streamType)
+      })
+
+      client.on('user-joined', async (user) => {
+        console.log('User Join')
+
+        console.log(user)
       })
 
       client.on('user-unpublished', (user, mediaType) => {

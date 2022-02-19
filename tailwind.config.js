@@ -8,6 +8,7 @@ module.exports = {
         ['gray-custom']: '#18171B',
         ['dark-white']: '#EDEDEF',
         ['light-gray']: '#ABABB6',
+        ['purple-custom']: '#9047FF',
         input: '#464649',
         // purple:
       },

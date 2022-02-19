@@ -13,8 +13,8 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <div className='App h-screen w-screen bg-black text-dark-white'>
-        <header className='w-full bg-gray flex justify-between items-center px-8 py-2'>
+      <div className='App h-screen w-screen bg-black text-dark-white overflow-hidden'>
+        <header className='w-full bg-gray-custom flex justify-between items-center px-8 py-2 mb-1'>
           <h1 className='text-3xl font-bold tracking-wide'>Strm</h1>
 
           <NavLink to='/'>Home</NavLink>

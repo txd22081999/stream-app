@@ -1,7 +1,7 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
 import React, { useEffect, useState } from 'react'
 import { GoPrimitiveDot } from 'react-icons/go'
-import { appCertificate, appId } from 'constant'
+import { appCertificate, appId, scrollOption } from 'constant'
 import { RTMTokenAxios } from 'config/axios-config'
 import { useRoomStore, useUserStore } from 'store'
 import { getTokenExpireTime } from 'utils/token-expire-time'
@@ -24,6 +24,7 @@ const Messaging = () => {
   const { setAudiences } = useRoomStore()
   const { userName } = useUserStore()
   const inputRef = useRef(null)
+  const newMessageRef = useRef<null | HTMLParagraphElement>(null)
 
   useEffect(() => {
     initiate()
@@ -77,11 +78,7 @@ const Messaging = () => {
       console.log('Member count:', memberCount)
     })
 
-    console.log(channel)
     channel.on('ChannelMessage', (message, memberId, messagePros) => {
-      console.log(message)
-      console.log(memberId)
-      console.log(messagePros)
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -90,6 +87,7 @@ const Messaging = () => {
           content: (message as RtmTextMessage).text,
         },
       ])
+      // newMessageRef.current?.scrollIntoView(scrollOption)
     })
 
     await channel.join()
@@ -165,8 +163,12 @@ const Messaging = () => {
       return
     }
     await channel.sendMessage({ text: msg })
-    console.log('sent', msg)
+    // newMessageRef.current?.scrollIntoView(scrollOption)
   }
+
+  useEffect(() => {
+    newMessageRef.current?.scrollIntoView(scrollOption)
+  }, [messages])
 
   function onInputChange(e: any) {
     setInputMessage(e.target.value)
@@ -194,8 +196,8 @@ const Messaging = () => {
   function textAreaAdjust() {
     if (!inputRef.current) return
     const element = inputRef.current as any
-    console.log(element.scrollHeight)
-    console.log(element.style.height)
+    // console.log(element.scrollHeight)
+    // console.log(element.style.height)
     // ;(inputRef.current as any).style.height = '20px'
     // if(scrollHeight >)
     // element.style.height = `${25 + element.scrollHeight}px`
@@ -204,12 +206,22 @@ const Messaging = () => {
   }
 
   return (
-    <div className='overflow-hidden flex flex-col mt-5 h-full w-full py-2'>
+    <div className='overflow-hidden flex flex-col mt-5 w-full py-2 h-full'>
       {isJoined ? (
         <>
-          <div className='message-list mt-1 flex-1'>
-            {messages.map(({ id, sender, content }) => (
-              <p key={id} className='mb-[6px] text-sm'>
+          {/* <div className='message-list mt-1 flex-1 max-h-[calc(100%-200px)] overflow-auto'> */}
+          <div
+            className='message-list mt-1 flex-1 overflow-x-hidden overflow-y-scroll mb-2
+            scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+            scrollbar-thumb-rounded-md'
+          >
+            {messages.map(({ id, sender, content }, index) => (
+              <p
+                key={id}
+                className='mb-[6px] text-sm'
+                ref={index === messages.length - 1 ? newMessageRef : null}
+                // ref={newMessageRef}
+              >
                 <span className='font-semibold text-green-300'>{sender}</span>
                 <span className='mr-[6px] ml-[1px]'>:</span>
                 <span>{content}</span>
@@ -225,7 +237,9 @@ const Messaging = () => {
               onKeyDown={onInputPress}
               onKeyUp={textAreaAdjust}
               value={inputMessage}
-              className='text-sm w-full bg-transparent min-h-[10px] outline-none scrollbar placeholder:text-gray-300 resize-none scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin scrollbar-thumb-rounded-md'
+              className='text-sm w-full bg-transparent min-h-[10px] outline-none placeholder:text-gray-300 
+              resize-none scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+              scrollbar-thumb-rounded-md'
             />
           </div>
 
