@@ -1,13 +1,13 @@
+import cx from 'classnames'
 import { avatarPlaceholder } from 'constant'
 import React, { useState } from 'react'
-import { GoPrimitiveDot } from 'react-icons/go'
-import { useRoomStore } from 'store'
+import { useRoomStore, useUserStore } from 'store'
 import Messaging from '../Messaging'
 import Stream from '../Stream'
 
 const Main = () => {
-  const [inCall, setInCall] = useState(false)
   const { audiences } = useRoomStore()
+  const { userName } = useUserStore()
 
   return (
     <div className='stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-1 h-[calc(100%-72px)]'>
@@ -21,29 +21,28 @@ const Main = () => {
           scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
           scrollbar-thumb-rounded-md py-2'
         >
-          {audiences.map((member) => (
-            <div key={member} className='flex items-center px-2 mb-3 '>
-              <img
-                src={avatarPlaceholder}
-                alt='avatar'
-                className='w-7 h-7 rounded-lg mr-1 border-green-400 border-[1px]'
-              />
-              <p className='whitespace-nowrap text-sm overflow-hidden text-ellipsis'>
-                {member}
-              </p>
-            </div>
-          ))}
+          {audiences.map((member) => {
+            const isMe: boolean = member === userName
+            return (
+              <div key={member} className='flex items-center px-2 mb-3 '>
+                <img
+                  src={avatarPlaceholder}
+                  alt='avatar'
+                  className={cx(
+                    'w-7 h-7 rounded-full mr-1 ',
+                    isMe && ' outline-green-400 outline-2 outline'
+                  )}
+                />
+                <p className='whitespace-nowrap text-sm overflow-hidden text-ellipsis'>
+                  {member}
+                </p>
+              </div>
+            )
+          })}
         </div>
       </div>
       <div className='video-list-area'>
-        <Stream setInCall={setInCall} />
-        {/* {inCall ? (
-          <VideoCall setInCall={setInCall} />
-        ) : (
-          <button onClick={() => setInCall(true)} className=''>
-            Join Call
-          </button>
-        )} */}
+        <Stream />
       </div>
       <div className='messaging-area h-full'>
         <Messaging />

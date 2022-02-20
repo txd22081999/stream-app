@@ -19,20 +19,14 @@ import { SetStateAction } from 'react'
 import { IClientRoleState } from 'store/room-store'
 
 interface IVideoProps {
-  users: IAgoraRTCRemoteUser[]
-  tracksCam?: [IMicrophoneAudioTrack, ICameraVideoTrack]
-  // | [ILocalAudioTrack, ILocalVideoTrack]
-  tracksScreen?: ILocalVideoTrack
   isScreen: boolean
   client: IAgoraRTCClient
   setHostUser: Dispatch<SetStateAction<IAgoraRTCRemoteUser | null>>
-  setScreenTrack: Dispatch<React.SetStateAction<ILocalVideoTrack | null>>
 }
 
 const ScreenVideo = (props: IVideoProps) => {
-  const { users, tracksCam, isScreen, client, setHostUser, setScreenTrack } =
-    props
-  const { ready: readyScreen, tracks: tracksScreen } =
+  const { isScreen, client, setHostUser } = props
+  const { ready: readyScreen, tracks } =
     useScreenTracks() as ICreateScreenVideoTrack
   const { roles, roomName } = useRoomStore()
 
@@ -44,9 +38,6 @@ const ScreenVideo = (props: IVideoProps) => {
   useEffect(() => {
     const initializeScreen = async (roomName: string) => {
       client.on('user-published', async (user, mediaType) => {
-        // console.log('SUBCRIBE REMOTE')
-        // console.log(user)
-        // console.log(user.videoTrack?.isPlaying)
         await client.subscribe(user, mediaType)
         if (!isHost) {
           setHostUser(user)
@@ -81,29 +72,32 @@ const ScreenVideo = (props: IVideoProps) => {
       }
 
       // INFO: Only publish stream if client (user) is host
-      if (roleInRoom?.role === EClientRole.HOST && tracksScreen) {
-        console.log('PUBLISH SCREEN')
-        // await client.publish(tracksScreen)
+      if (tracks) {
+        await client.publish(tracks)
       }
-      // if (!start) setStart(true)
-      // setIsScreen(true)
     }
 
-    if (readyScreen && tracksScreen) {
+    if (readyScreen && tracks) {
       try {
         initializeScreen(roomName)
       } catch (error) {
         console.log(error)
       }
     }
-  }, [roomName, client, readyScreen, tracksScreen])
+  }, [roomName, client, readyScreen, tracks])
+
+  useEffect(() => {
+    return () => {
+      client.unpublish()
+    }
+  }, [])
 
   return (
     <div className='video-list h-full grid'>
       <div>
-        {isScreen && tracksScreen && (
+        {isScreen && tracks && (
           <AgoraVideoPlayer
-            videoTrack={tracksScreen}
+            videoTrack={tracks}
             style={{ height: '100%', width: '100%' }}
           />
         )}

@@ -42,12 +42,6 @@ const Messaging = () => {
     client = await AgoraRTM.createInstance(appId)
     console.log(client)
 
-    // client.on('MessageFromPeer', (message, peerId, messageProps) => {
-    //   console.log(message)
-    //   console.log(peerId)
-    //   console.log(messageProps)
-    // })
-
     if (!client) {
       console.log('Empty client')
       return

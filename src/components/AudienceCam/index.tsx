@@ -17,20 +17,13 @@ import { generateRTCToken } from 'utils/generate-token'
 import { getTokenExpireTime } from 'utils/token-expire-time'
 
 interface IAudienceCCamProps {
-  users: IAgoraRTCRemoteUser[]
-  tracksCam?: [IMicrophoneAudioTrack, ICameraVideoTrack]
-  tracksScreen?: ILocalVideoTrack
-  isScreen: boolean
   client: IAgoraRTCClient
-  hostUser: IAgoraRTCRemoteUser | null
-  isHost: boolean
-  screenTrack: ILocalVideoTrack | null
 }
 
 const AudienceCam = (props: IAudienceCCamProps) => {
   const { client } = props
-  const { rtcToken, setRtcToken, setUid } = useUserStore()
-  const { roomName, roles } = useRoomStore()
+  const { rtcToken, setRtcToken } = useUserStore()
+  const { roomName } = useRoomStore()
   // const roleInRoom: IClientRoleState | undefined = roles.find(
   //   (item) => item.roomName === roomName
   // )

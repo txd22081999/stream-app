@@ -16,18 +16,13 @@ import { IClientRoleState } from 'store/room-store'
 import { generateRTCToken } from 'utils/generate-token'
 
 interface IHostCamProps {
-  users: IAgoraRTCRemoteUser[]
-  tracksCam?: [IMicrophoneAudioTrack, ICameraVideoTrack]
-  tracksScreen?: ILocalVideoTrack
-  isScreen: boolean
   client: IAgoraRTCClient
   hostUser: IAgoraRTCRemoteUser | null
-  isHost: boolean
-  screenTrack: ILocalVideoTrack | null
+  switchShareMode: () => {}
 }
 
 const HostCam = (props: IHostCamProps) => {
-  const { users, isScreen, client, hostUser, screenTrack } = props
+  const { client, hostUser, switchShareMode } = props
   const { ready, tracks } = useMicrophoneAndCameraTracks()
   const { rtcToken, setRtcToken } = useUserStore()
   const { roomName, roles } = useRoomStore()
@@ -36,6 +31,12 @@ const HostCam = (props: IHostCamProps) => {
   )
   const isHost: boolean = roleInRoom?.role === EClientRole.HOST
   const [start, setStart] = useState(false)
+
+  useEffect(() => {
+    return () => {
+      client.unpublish()
+    }
+  }, [])
 
   useEffect(() => {
     const initializeCam = async (roomName: string) => {
@@ -84,10 +85,9 @@ const HostCam = (props: IHostCamProps) => {
       } catch (error) {
         console.log('error')
       }
-      if (isHost && tracks && !isScreen) {
+      if (tracks) {
         await client.publish(tracks)
         console.log('publish cam here')
-
         // setIsScreen(false)
       }
       if (!start) setStart(true)
@@ -102,28 +102,27 @@ const HostCam = (props: IHostCamProps) => {
     }
   }, [client, ready])
 
-  useEffect(() => {
-    ;(async () => {
-      if (!isHost) return
-      console.log(screenTrack)
-      if (isScreen) {
-        console.log('ADD SCREEN')
-        await client.unpublish(tracks as ILocalTrack[])
-        if (screenTrack) {
-          console.log('REMOVE CAM')
-          // await client.publish(screenTrack)
-        }
-      } else {
-        console.log('ADD CAM')
+  // useEffect(() => {
+  //   ;(async () => {
+  //     console.log(screenTrack)
+  //     if (isScreen) {
+  //       console.log('ADD SCREEN')
+  //       await client.unpublish(tracks as ILocalTrack[])
+  //       if (screenTrack) {
+  //         console.log('REMOVE CAM')
+  //         await client.publish(screenTrack)
+  //       }
+  //     } else {
+  //       console.log('ADD CAM')
 
-        if (screenTrack) {
-          console.log('REMOVE SCREEN')
-          await client.unpublish(screenTrack)
-        }
-        // await client.publish(tracks as ILocalTrack[])
-      }
-    })()
-  }, [isScreen])
+  //       if (screenTrack) {
+  //         console.log('REMOVE SCREEN')
+  //         await client.unpublish(screenTrack)
+  //       }
+  //       await client.publish(tracks as ILocalTrack[])
+  //     }
+  //   })()
+  // }, [isScreen])
 
   console.log('ready', ready)
   console.log(tracks && ready)
@@ -153,9 +152,13 @@ const HostCam = (props: IHostCamProps) => {
           >
             unpublish
           </button>
-          <button onClick={() => client.publish(tracks as ILocalTrack[])}>
+          <button
+            onClick={() => client.publish(tracks as ILocalTrack[])}
+            className='mr-5'
+          >
             publish
           </button>
+          <button onClick={switchShareMode}>Switch</button>
         </div>
       </>
     )
