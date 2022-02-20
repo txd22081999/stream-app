@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './App.scss'
 import Lobby from './components/Lobby'
 import Rooms from './components/Rooms'
-import Stream from './components/Stream'
+import Main from './components/Main'
 import { NavLink } from 'react-router-dom'
 import { useUserStore } from './store'
 import ReactTooltip from 'react-tooltip'
@@ -37,7 +37,7 @@ const App = () => {
           {isAuthenticated && (
             <>
               <Route path='/rooms' element={<Rooms />} />
-              <Route path='/stream' element={<Stream />} />
+              <Route path='/stream' element={<Main />} />
             </>
           )}
 
