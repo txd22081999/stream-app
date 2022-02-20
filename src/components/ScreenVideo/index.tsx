@@ -10,11 +10,13 @@ import {
 import { ICreateScreenVideoTrack, useScreenTracks } from 'config'
 import { videoConfig } from 'constant'
 import { EClientRole } from 'enum'
-import { useEffect } from 'react'
+import { Dispatch, useEffect } from 'react'
 import { useRoomStore } from 'store'
 import { appCertificate, appId } from 'constant'
 import { generateRTCToken } from 'utils/generate-token'
 import './style.scss'
+import { SetStateAction } from 'react'
+import { IClientRoleState } from 'store/room-store'
 
 interface IVideoProps {
   users: IAgoraRTCRemoteUser[]
@@ -23,23 +25,36 @@ interface IVideoProps {
   tracksScreen?: ILocalVideoTrack
   isScreen: boolean
   client: IAgoraRTCClient
+  setHostUser: Dispatch<SetStateAction<IAgoraRTCRemoteUser | null>>
+  setScreenTrack: Dispatch<React.SetStateAction<ILocalVideoTrack | null>>
 }
 
 const ScreenVideo = (props: IVideoProps) => {
-  const { users, tracksCam, isScreen, client } = props
+  const { users, tracksCam, isScreen, client, setHostUser, setScreenTrack } =
+    props
   const { ready: readyScreen, tracks: tracksScreen } =
     useScreenTracks() as ICreateScreenVideoTrack
   const { roles, roomName } = useRoomStore()
 
+  const roleInRoom: IClientRoleState | undefined = roles.find(
+    (item) => item.roomName === roomName
+  )
+  const isHost: boolean = roleInRoom?.role === EClientRole.HOST
+
   useEffect(() => {
     const initializeScreen = async (roomName: string) => {
-      const roleByRoom = roles.find((item) => item.roomName === roomName)
-      if (videoConfig.mode === 'live' && roleByRoom) {
-        client.setClientRole(roleByRoom.role)
+      if (videoConfig.mode === 'live' && roleInRoom) {
+        client.setClientRole(roleInRoom.role)
       }
 
       client.on('user-published', async (user, mediaType) => {
+        // console.log('SUBCRIBE REMOTE')
+        // console.log(user)
+        // console.log(user.videoTrack?.isPlaying)
         await client.subscribe(user, mediaType)
+        if (!isHost) {
+          setHostUser(user)
+        }
       })
 
       client.on('stream-type-changed', (uid, streamType) => {
@@ -51,6 +66,7 @@ const ScreenVideo = (props: IVideoProps) => {
       })
 
       client.on('user-unpublished', (user, mediaType) => {
+        client.unsubscribe(user)
         if (mediaType === 'audio') {
           if (user.audioTrack) user.audioTrack.stop()
         }
@@ -69,10 +85,9 @@ const ScreenVideo = (props: IVideoProps) => {
       }
 
       // INFO: Only publish stream if client (user) is host
-      if (roleByRoom?.role === EClientRole.HOST && tracksScreen) {
+      if (roleInRoom?.role === EClientRole.HOST && tracksScreen) {
         console.log('PUBLISH SCREEN')
-
-        await client.publish(tracksScreen)
+        // await client.publish(tracksScreen)
       }
       // if (!start) setStart(true)
       // setIsScreen(true)

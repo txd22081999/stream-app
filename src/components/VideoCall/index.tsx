@@ -36,7 +36,9 @@ const VideoCall = (props: any) => {
   const [start, setStart] = useState(false)
   const client = useClient()
   const { ready, tracks } = useMicrophoneAndCameraTracks()
+
   const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
+  const [screenTrack, setScreenTrack] = useState<ILocalVideoTrack | null>(null)
 
   const [isScreen, setIsScreen] = useState<boolean>(false)
   const roleInRoom: IClientRoleState | undefined = roles.find(
@@ -46,14 +48,19 @@ const VideoCall = (props: any) => {
 
   useEffect(() => {
     const initializeCam = async (roomName: string) => {
+      console.log('initializeCam')
+
       if (videoConfig.mode === 'live' && roleInRoom) {
         client.setClientRole(roleInRoom.role)
       }
 
       client.on('user-published', async (user, mediaType) => {
-        console.log('user publish')
+        console.log('SUBCRIBE REMOTE')
         console.log(user)
-        await client.subscribe(user, mediaType)
+        console.log(user.videoTrack?.isPlaying)
+        if (!isHost) {
+          await client.subscribe(user, mediaType)
+        }
         setHostUser(user)
       })
 
@@ -65,23 +72,19 @@ const VideoCall = (props: any) => {
         console.log(user)
       })
 
-      client.on('user-unpublished', (user, mediaType) => {
-        if (mediaType === 'audio') {
-          if (user.audioTrack) user.audioTrack.stop()
-        }
-        if (mediaType === 'video') {
-          if (user.videoTrack) user.videoTrack.stop()
-          setUsers((prevUsers) => {
-            return prevUsers.filter((User) => User.uid !== user.uid)
-          })
-        }
+      client.on('user-unpublished', async (user, mediaType) => {
+        console.log('User unpublished')
+
+        // if (mediaType === 'audio') {
+        //   if (user.audioTrack) user.audioTrack.stop()
+        // }
+        // if (mediaType === 'video') {
+        //   if (user.videoTrack) user.videoTrack.stop()
+        // }
+        await client.unsubscribe(user, mediaType)
       })
 
-      client.on('user-left', (user) => {
-        setUsers((prevUsers) => {
-          return prevUsers.filter((User) => User.uid !== user.uid)
-        })
-      })
+      client.on('user-left', (user) => {})
 
       // INFO: Only publish stream if client (user) is host
       try {
@@ -94,8 +97,10 @@ const VideoCall = (props: any) => {
       } catch (error) {
         console.log('error')
       }
-      if (isHost && tracks) {
-        await client.publish(tracks)
+      if (isHost && tracks && !isScreen) {
+        // await client.publish(tracks)
+        console.log('publish cam here')
+
         setIsScreen(false)
       }
       if (!start) setStart(true)
@@ -108,18 +113,53 @@ const VideoCall = (props: any) => {
         console.log(error)
       }
     }
-  }, [roomName, client, ready, tracks])
+  }, [client, ready])
 
-  function switchShareMode() {
+  async function switchShareMode() {
     console.log('SWITCH')
-
-    if (!isScreen) {
-      console.log('UNPUBLISH')
-      client.unpublish(tracks as ILocalTrack[])
-    } else {
-      client.publish(tracks as ILocalTrack[])
-    }
+    // if (!isScreen) {
+    //   console.log(screenTrack)
+    //   await client.unpublish(tracks as ILocalTrack[])
+    //   if (screenTrack) await client.publish(screenTrack)
+    // } else {
+    //   console.log(screenTrack)
+    //   if (screenTrack) await client.unpublish(screenTrack)
+    //   await client.publish(tracks as ILocalTrack[])
+    // }
     setIsScreen((prev) => !prev)
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      if (!isHost) return
+      console.log(screenTrack)
+      if (isScreen) {
+        console.log('ADD SCREEN')
+        await client.unpublish(tracks as ILocalTrack[])
+        if (screenTrack) {
+          console.log('REMOVE CAM')
+          await client.publish(screenTrack)
+        }
+      } else {
+        console.log('ADD CAM')
+
+        if (screenTrack) {
+          console.log('REMOVE SCREEN')
+          await client.unpublish(screenTrack)
+        }
+        await client.publish(tracks as ILocalTrack[])
+      }
+    })()
+  }, [isScreen])
+
+  if (isHost && !isScreen && start && tracks) {
+    console.log('here 1 ')
+  }
+  if (isHost && isScreen) {
+    console.log('here 2 ')
+  }
+  if (!isHost) {
+    console.log('here 3')
   }
 
   return (
@@ -136,7 +176,7 @@ const VideoCall = (props: any) => {
         </button>
       </div>
       <div className='video-container h-[80vh]'>
-        {!isScreen && start && tracks && (
+        {isHost && !isScreen && start && tracks && (
           <CamVideo
             tracksCam={tracks}
             users={users}
@@ -146,9 +186,24 @@ const VideoCall = (props: any) => {
             isHost={isHost}
           />
         )}
-        {/* {isScreen && isHost && (
-          <ScreenVideo users={users} isScreen={isScreen} client={client} />
-        )} */}
+        {isHost && isScreen && (
+          <ScreenVideo
+            users={users}
+            isScreen={isScreen}
+            client={client}
+            setHostUser={setHostUser}
+            setScreenTrack={setScreenTrack}
+          />
+        )}
+        {!isHost && (
+          <CamVideo
+            users={users}
+            isScreen={isScreen}
+            client={client}
+            hostUser={hostUser}
+            isHost={isHost}
+          />
+        )}
         {/* {isScreen && start && tracksScreen && (
           <Video
             users={users}

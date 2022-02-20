@@ -2262,10 +2262,10 @@
   dependencies:
     "agora-rtc-sdk-ng" "^4.3.0"
 
-"agora-rtc-sdk-ng@^4.3.0":
-  "integrity" "sha512-H5qAgTe8cn0+BN6/KOcrtGl1Lc+We7K/eD7U5DiWnBY0n/bs30isGrjIex5IXqRTJv55khSN3pqgVmEkpR3ozQ=="
-  "resolved" "https://registry.npmjs.org/agora-rtc-sdk-ng/-/agora-rtc-sdk-ng-4.8.2.tgz"
-  "version" "4.8.2"
+"agora-rtc-sdk-ng@^4.3.0", "agora-rtc-sdk-ng@^4.9.0":
+  "integrity" "sha512-/hRwdiLJ3ZerWrzRbxQG3AYMA6l9YTefQvECjp6XMfImUoySm4y7QTAu7StNY7jOVBy3FeSUuA5Qdblgh5bR8g=="
+  "resolved" "https://registry.npmjs.org/agora-rtc-sdk-ng/-/agora-rtc-sdk-ng-4.9.0.tgz"
+  "version" "4.9.0"
 
 "agora-rtc-sdk@*", "agora-rtc-sdk@^3.6.9":
   "integrity" "sha512-+EkZMfH1DNoppYMhOmxrbukwe43V2aYcvm1SwubumoAWqvzLD/VUb50I8wJXdfUjlRrOLwGJ1g9B12J/lnwbdg=="
