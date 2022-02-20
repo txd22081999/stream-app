@@ -1625,6 +1625,13 @@
   "resolved" "https://registry.npmjs.org/@trysound/sax/-/sax-0.2.0.tgz"
   "version" "0.2.0"
 
+"@types/agora-rtc-sdk@^3.2.0":
+  "integrity" "sha512-a45UnqSvqx+N0baGQado51kyth097HfiSmdignVfFhA+4RoHgmt3WSkQUGncPoZrVWJD8/xKkd9vmX8lJ5iKAw=="
+  "resolved" "https://registry.npmjs.org/@types/agora-rtc-sdk/-/agora-rtc-sdk-3.2.0.tgz"
+  "version" "3.2.0"
+  dependencies:
+    "agora-rtc-sdk" "*"
+
 "@types/aria-query@^4.2.0":
   "integrity" "sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig=="
   "resolved" "https://registry.npmjs.org/@types/aria-query/-/aria-query-4.2.2.tgz"
@@ -2260,7 +2267,7 @@
   "resolved" "https://registry.npmjs.org/agora-rtc-sdk-ng/-/agora-rtc-sdk-ng-4.8.2.tgz"
   "version" "4.8.2"
 
-"agora-rtc-sdk@^3.6.9":
+"agora-rtc-sdk@*", "agora-rtc-sdk@^3.6.9":
   "integrity" "sha512-+EkZMfH1DNoppYMhOmxrbukwe43V2aYcvm1SwubumoAWqvzLD/VUb50I8wJXdfUjlRrOLwGJ1g9B12J/lnwbdg=="
   "resolved" "https://registry.npmjs.org/agora-rtc-sdk/-/agora-rtc-sdk-3.6.9.tgz"
   "version" "3.6.9"

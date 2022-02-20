@@ -1,3 +1,4 @@
+import { createStream } from 'agora-rtc-sdk'
 import { AgoraAxios } from 'config/axios-config'
 import { EClientRole } from 'enum'
 import React, { useEffect, useState } from 'react'
@@ -40,6 +41,24 @@ const Rooms = () => {
     }
   }
 
+  async function createStreamVideo() {
+    const stream = await createStream({
+      audio: true,
+      video: true,
+      screen: true,
+      screenAudio: true,
+    })
+    await stream.init(
+      () => {
+        console.log('success')
+      },
+      (e) => {
+        console.log('fail', e)
+      }
+    )
+    stream.play('stream-box', { fit: 'cover', muted: false })
+  }
+
   function createRoom(e: any): void {
     e.preventDefault()
     const roomName = e.target[0].value
@@ -51,7 +70,6 @@ const Rooms = () => {
   }
 
   function onRoomClick(roomName: string): void {
-    console.log(roomName)
     setRoomName(roomName)
     addRole({ role: EClientRole.AUDIENCE, roomName })
     navigate('/stream')
