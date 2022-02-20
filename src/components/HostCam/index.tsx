@@ -29,7 +29,7 @@ interface IHostCamProps {
 const HostCam = (props: IHostCamProps) => {
   const { users, isScreen, client, hostUser, screenTrack } = props
   const { ready, tracks } = useMicrophoneAndCameraTracks()
-  const { userName, rtcToken, uid, setRtcToken, setUid } = useUserStore()
+  const { rtcToken, setRtcToken } = useUserStore()
   const { roomName, roles } = useRoomStore()
   const roleInRoom: IClientRoleState | undefined = roles.find(
     (item) => item.roomName === roomName

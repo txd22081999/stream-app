@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react'
 import { useRoomStore, useUserStore } from 'store'
 import { IClientRoleState } from 'store/room-store'
 import { generateRTCToken } from 'utils/generate-token'
+import { getTokenExpireTime } from 'utils/token-expire-time'
 
 interface IAudienceCCamProps {
   users: IAgoraRTCRemoteUser[]
@@ -27,14 +28,13 @@ interface IAudienceCCamProps {
 }
 
 const AudienceCam = (props: IAudienceCCamProps) => {
-  const { users, isScreen, client, screenTrack } = props
-  const { userName, rtcToken, uid, setRtcToken, setUid } = useUserStore()
+  const { client } = props
+  const { rtcToken, setRtcToken, setUid } = useUserStore()
   const { roomName, roles } = useRoomStore()
-  const roleInRoom: IClientRoleState | undefined = roles.find(
-    (item) => item.roomName === roomName
-  )
+  // const roleInRoom: IClientRoleState | undefined = roles.find(
+  //   (item) => item.roomName === roomName
+  // )
   const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
-  // const isHost: boolean = roleInRoom?.role === EClientRole.HOST
   const [start, setStart] = useState(false)
 
   useEffect(() => {
@@ -44,6 +44,8 @@ const AudienceCam = (props: IAudienceCCamProps) => {
       client.on('user-published', async (user, mediaType) => {
         console.log('SUBCRIBE REMOTE')
         await client.subscribe(user, mediaType)
+        user.audioTrack?.play()
+        user.videoTrack?.play('stream-box')
         setHostUser(user)
       })
 
@@ -64,21 +66,12 @@ const AudienceCam = (props: IAudienceCCamProps) => {
         // if (mediaType === 'video') {
         //   if (user.videoTrack) user.videoTrack.stop()
         // }
-        await client.unsubscribe(user, mediaType)
+        // await client.unsubscribe(user, mediaType)
       })
 
       client.on('user-left', (user) => {})
 
-      try {
-        let token: string = rtcToken
-        if (true) {
-          token = await generateRTCToken(roomName)
-          setRtcToken(token)
-        }
-        await client.join(appId, roomName, token)
-      } catch (error) {
-        console.log('error')
-      }
+      await getNewToken(roomName)
       if (!start) setStart(true)
     }
 
@@ -89,14 +82,26 @@ const AudienceCam = (props: IAudienceCCamProps) => {
     }
   }, [client])
 
+  async function getNewToken(roomName: string) {
+    try {
+      let token: string = rtcToken
+      token = await generateRTCToken(roomName)
+      setRtcToken(token)
+      await client.join(appId, roomName, token)
+    } catch (error) {
+      console.log('error')
+    }
+  }
+
   if (hostUser) {
     return (
       <div className='video-list h-full grid'>
         {hostUser.videoTrack && (
-          <AgoraVideoPlayer
-            videoTrack={hostUser.videoTrack}
-            className='h-full w-full'
-          />
+          // <AgoraVideoPlayer
+          //   videoTrack={hostUser.videoTrack}
+          //   className='h-full w-full'
+          // />
+          <div id='stream-box' className='h-full w-full bg-slate-400'></div>
         )}
       </div>
     )
