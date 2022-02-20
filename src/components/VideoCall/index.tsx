@@ -115,7 +115,7 @@ const VideoCall = (props: any) => {
   }
 
   return (
-    <div>
+    <div className='bg-black-main'>
       <div>{JSON.stringify(roles)}</div>
       <h2>Room: {roomName}</h2>
       <div className='video-container'>

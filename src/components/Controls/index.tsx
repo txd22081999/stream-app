@@ -51,7 +51,7 @@ export default function Controls(props: any) {
 
   return (
     <div className='w-full mt-2 '>
-      <div className='flex items-center gap-4 mx-auto w-fit px-6 py-2 bg-[rgb(256,256,256,0.1)]'>
+      <div className='flex items-center gap-4 mx-auto w-fit px-6 py-2'>
         <button
           onClick={() => mute('audio')}
           data-tip={trackState.audio ? 'On Mic' : 'Off Mic'}

@@ -10,17 +10,19 @@ const Stream = () => {
   const { audiences } = useRoomStore()
 
   return (
-    // <div className='stream-container grid grid-cols-[200px_minmax(900px,_1fr)_100px] gap-2'>
-    <div className='stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-2'>
-      <div className=''>
-        <h3 className='capitalize text-center py-3 font-medium bg-gray-custom'>
+    <div className='stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-1 h-[calc(100%-72px)]'>
+      <div className='flex flex-col'>
+        <h3 className='capitalize text-center py-3 font-medium bg-black-box mb-1'>
           participants ({audiences.length})
         </h3>
 
-        <div className=''>
+        <div
+          className='bg-black-main flex-1 overflow-y-scroll
+          scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+          scrollbar-thumb-rounded-md py-2'
+        >
           {audiences.map((member) => (
             <div key={member} className='flex items-center px-2 mb-3 '>
-              {/* <GoPrimitiveDot className='text-green-400' /> */}
               <img
                 src={avatarPlaceholder}
                 alt='avatar'
@@ -43,7 +45,7 @@ const Stream = () => {
           </button>
         )} */}
       </div>
-      <div className='messaging-area h-[calc(100vh-75px)]'>
+      <div className='messaging-area h-full'>
         <Messaging />
       </div>
     </div>

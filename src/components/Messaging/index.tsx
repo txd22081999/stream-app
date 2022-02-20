@@ -21,7 +21,7 @@ const Messaging = () => {
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
   const [members, setMembers] = useState<string[]>([])
-  const { setAudiences } = useRoomStore()
+  const { roomName, setAudiences } = useRoomStore()
   const { userName } = useUserStore()
   const inputRef = useRef(null)
   const newMessageRef = useRef<null | HTMLParagraphElement>(null)
@@ -59,7 +59,7 @@ const Messaging = () => {
 
     await loginChat()
 
-    const channelId = 'chat1'
+    const channelId = roomName
     channel = await client.createChannel(channelId)
 
     channel.on('MemberJoined', async (memberId) => {
@@ -206,12 +206,11 @@ const Messaging = () => {
   }
 
   return (
-    <div className='overflow-hidden flex flex-col mt-5 w-full py-2 h-full'>
+    <div className='overflow-hidden flex flex-col w-full py-2 h-full bg-black-main'>
       {isJoined ? (
         <>
-          {/* <div className='message-list mt-1 flex-1 max-h-[calc(100%-200px)] overflow-auto'> */}
           <div
-            className='message-list mt-1 flex-1 overflow-x-hidden overflow-y-scroll mb-2
+            className='message-list mt-1 mx-2 flex-1 overflow-x-hidden overflow-y-scroll mb-2
             scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
             scrollbar-thumb-rounded-md'
           >
@@ -229,7 +228,7 @@ const Messaging = () => {
             ))}
           </div>
 
-          <div className='bg-input rounded-lg py-3 px-4'>
+          <div className='bg-input rounded-lg mx-2 py-3 px-4'>
             <textarea
               ref={inputRef}
               placeholder='Send a message'

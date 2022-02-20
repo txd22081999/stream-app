@@ -15,7 +15,7 @@ export default function Video(props: IVideoProps) {
   const { users, tracks } = props
 
   return (
-    <div className='video-list'>
+    <div className='video-list h-full grid'>
       <div>
         <AgoraVideoPlayer
           videoTrack={tracks[1]}
