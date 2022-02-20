@@ -52,8 +52,6 @@ const useRoomStore = create(
           // const roleList = union(get().roles, newRole) as any
           let roleList = [...get().roles, newRole]
           roleList = unionWith(roleList, isEqual)
-          console.log('here', roleList)
-
           return { roles: roleList }
         }),
 

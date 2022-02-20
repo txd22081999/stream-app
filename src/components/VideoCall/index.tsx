@@ -12,15 +12,18 @@ import { useRoomStore, useUserStore } from 'store'
 import { appId, appCertificate, videoConfig } from 'constant'
 import { getTokenExpireTime } from 'utils/token-expire-time'
 import Controls from 'components/Controls'
-import Video from 'components/Video'
+import CamVideo from 'components/CamVideo'
 import './style.scss'
 import {
   AgoraVideoPlayer,
   createMicrophoneAndCameraTracks,
   createScreenVideoTrack,
 } from 'agora-rtc-react'
-import { ILocalVideoTrack } from 'agora-rtc-sdk-ng'
+import { ILocalVideoTrack, ILocalTrack } from 'agora-rtc-sdk-ng'
 import { createClient, createStream } from 'agora-rtc-sdk'
+import { generateRTCToken } from 'utils/generate-token'
+import ScreenVideo from 'components/ScreenVideo'
+import { IClientRoleState } from 'store/room-store'
 
 // let readyScreen: boolean = false
 // let tracksScreen: ILocalVideoTrack | null = null
@@ -33,10 +36,13 @@ const VideoCall = (props: any) => {
   const [start, setStart] = useState(false)
   const client = useClient()
   const { ready, tracks } = useMicrophoneAndCameraTracks()
-  const { ready: readyScreen, tracks: tracksScreen } =
-    useScreenTracks() as ICreateScreenVideoTrack
+  const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
+
   const [isScreen, setIsScreen] = useState<boolean>(false)
-  const roleInRoom = roles.find((item) => item.roomName === roomName)
+  const roleInRoom: IClientRoleState | undefined = roles.find(
+    (item) => item.roomName === roomName
+  )
+  const isHost: boolean = roleInRoom?.role === EClientRole.HOST
 
   useEffect(() => {
     const initializeCam = async (roomName: string) => {
@@ -45,65 +51,10 @@ const VideoCall = (props: any) => {
       }
 
       client.on('user-published', async (user, mediaType) => {
-        await client.subscribe(user, mediaType)
-      })
-
-      client.on('stream-type-changed', (uid, streamType) => {
-        console.log(uid, streamType)
-      })
-
-      client.on('user-joined', async (user) => {
-        console.log('User Join')
-
+        console.log('user publish')
         console.log(user)
-      })
-
-      client.on('user-unpublished', (user, mediaType) => {
-        if (mediaType === 'audio') {
-          if (user.audioTrack) user.audioTrack.stop()
-        }
-        if (mediaType === 'video') {
-          setUsers((prevUsers) => {
-            return prevUsers.filter((User) => User.uid !== user.uid)
-          })
-        }
-      })
-
-      client.on('user-left', (user) => {
-        setUsers((prevUsers) => {
-          return prevUsers.filter((User) => User.uid !== user.uid)
-        })
-      })
-
-      try {
-        let token: string = rtcToken
-
-        // if (!token) {
-        if (true) {
-          token = await generateRtmToken(roomName)
-          setRtcToken(token)
-        }
-        await client.join(appId, roomName, token)
-      } catch (error) {
-        console.log('error')
-      }
-
-      // INFO: Only publish stream if client (user) is host
-      if (roleInRoom?.role === EClientRole.HOST && tracks) {
-        await client.publish([tracks[0], tracks[1]])
-      }
-      if (!start) setStart(true)
-      setIsScreen(false)
-    }
-
-    const initializeScreen = async (roomName: string) => {
-      const roleByRoom = roles.find((item) => item.roomName === roomName)
-      if (videoConfig.mode === 'live' && roleByRoom) {
-        client.setClientRole(roleByRoom.role)
-      }
-
-      client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType)
+        setHostUser(user)
       })
 
       client.on('stream-type-changed', (uid, streamType) => {
@@ -119,6 +70,7 @@ const VideoCall = (props: any) => {
           if (user.audioTrack) user.audioTrack.stop()
         }
         if (mediaType === 'video') {
+          if (user.videoTrack) user.videoTrack.stop()
           setUsers((prevUsers) => {
             return prevUsers.filter((User) => User.uid !== user.uid)
           })
@@ -131,30 +83,22 @@ const VideoCall = (props: any) => {
         })
       })
 
+      // INFO: Only publish stream if client (user) is host
       try {
         let token: string = rtcToken
-
-        // if (!token) {
         if (true) {
-          token = await generateRtmToken(roomName)
+          token = await generateRTCToken(roomName)
           setRtcToken(token)
         }
         await client.join(appId, roomName, token)
       } catch (error) {
         console.log('error')
       }
-
-      // INFO: Only publish stream if client (user) is host
-      if (roleByRoom?.role === EClientRole.HOST && tracksScreen) {
-        await client.publish(tracksScreen)
+      if (isHost && tracks) {
+        await client.publish(tracks)
+        setIsScreen(false)
       }
       if (!start) setStart(true)
-      setIsScreen(true)
-    }
-
-    if (ready && tracks && readyScreen && tracksScreen) {
-      initializeCam(roomName)
-      initializeScreen(roomName)
     }
 
     if (ready && tracks) {
@@ -163,50 +107,55 @@ const VideoCall = (props: any) => {
       } catch (error) {
         console.log(error)
       }
-    } else if (roleInRoom?.role === EClientRole.HOST) {
-      try {
-        initializeScreen(roomName)
-      } catch (error) {
-        console.log(error)
-      }
     }
-  }, [roomName, client, ready, tracks, readyScreen, tracksScreen])
+  }, [roomName, client, ready, tracks])
 
-  async function generateRtmToken(roomName: string) {
-    const {
-      data: { token },
-    } = await RTCTokenAxios.request({
-      data: {
-        appId,
-        appCertificate,
-        channelName: roomName,
-        uid: 0,
-        role: EUserRole.PUBLISHER,
-        privilegeExpiredTs: getTokenExpireTime(),
-      },
-    })
+  function switchShareMode() {
+    console.log('SWITCH')
 
-    return token
+    if (!isScreen) {
+      console.log('UNPUBLISH')
+      client.unpublish(tracks as ILocalTrack[])
+    } else {
+      client.publish(tracks as ILocalTrack[])
+    }
+    setIsScreen((prev) => !prev)
   }
 
   return (
     <div className='bg-black-main'>
       <div>{JSON.stringify(roles)}</div>
       <h2>Room: {roomName}</h2>
-      <button onClick={() => setIsScreen((prev) => !prev)}>
-        Switch screen
-      </button>
-      <div className='video-container'>
+      <div className='flex gap-5'>
+        <button onClick={switchShareMode}>Switch screen</button>
+        <button onClick={() => client.unpublish(tracks as ILocalTrack[])}>
+          unpublish
+        </button>
+        <button onClick={() => client.publish(tracks as ILocalTrack[])}>
+          publish
+        </button>
+      </div>
+      <div className='video-container h-[80vh]'>
         {!isScreen && start && tracks && (
-          <Video tracksCam={tracks} users={users} isScreen={isScreen} />
+          <CamVideo
+            tracksCam={tracks}
+            users={users}
+            isScreen={isScreen}
+            client={client}
+            hostUser={hostUser}
+            isHost={isHost}
+          />
         )}
-        {isScreen && start && tracksScreen && (
+        {/* {isScreen && isHost && (
+          <ScreenVideo users={users} isScreen={isScreen} client={client} />
+        )} */}
+        {/* {isScreen && start && tracksScreen && (
           <Video
             users={users}
             tracksScreen={tracksScreen}
             isScreen={isScreen}
           />
-        )}
+        )} */}
       </div>
       <div className='controls-container'>
         {ready && tracks && (
