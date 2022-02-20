@@ -43,10 +43,6 @@ const ScreenVideo = (props: IVideoProps) => {
 
   useEffect(() => {
     const initializeScreen = async (roomName: string) => {
-      if (videoConfig.mode === 'live' && roleInRoom) {
-        client.setClientRole(roleInRoom.role)
-      }
-
       client.on('user-published', async (user, mediaType) => {
         // console.log('SUBCRIBE REMOTE')
         // console.log(user)
