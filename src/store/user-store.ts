@@ -12,6 +12,8 @@ interface IUserState {
   setUid: (uid: number) => void
   userColor: string
   setUserColor: (color: string) => void
+  userAvatar: string
+  setUserAvatar: (avatar: string) => void
 }
 
 const useUserStore = create(
@@ -31,6 +33,9 @@ const useUserStore = create(
 
       userColor: '',
       setUserColor: (color: string) => set(() => ({ userColor: color })),
+
+      userAvatar: '',
+      setUserAvatar: (avatar: string) => set(() => ({ userAvatar: avatar })),
     }),
     {
       name: 'user-storage',

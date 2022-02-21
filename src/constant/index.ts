@@ -32,7 +32,19 @@ export interface IAvatar {
   src: string
 }
 
-export const colorList: string[] = ['red', 'blue', 'pink', 'green']
+const Color = {
+  red: '#F94801',
+  blue: '#1C91FF',
+  pink: '#FF68B3',
+  green: '#027F02',
+}
+
+export const colorList: string[] = [
+  Color.red,
+  Color.blue,
+  Color.pink,
+  Color.green,
+]
 
 export const avatarList: IAvatar[] = [
   {

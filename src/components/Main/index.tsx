@@ -17,10 +17,6 @@ const Main = () => {
     return att?.avatar! || ''
   }
 
-  useEffect(() => {
-    getClientAvatar()
-  }, [rtmClient])
-
   return (
     <div className='stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-1 h-[calc(100%-72px)]'>
       <div className='flex flex-col'>

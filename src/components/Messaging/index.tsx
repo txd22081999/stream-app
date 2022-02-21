@@ -15,6 +15,7 @@ import { getTokenExpireTime } from 'utils/token-expire-time'
 import { useRef } from 'react'
 import cx from 'classnames'
 import { randomInList } from 'utils/random-of-list'
+import { MethodSignature } from 'typescript'
 
 let client: RtmClientCustom | null = null
 let channel: RtmChannel | null = null
@@ -23,6 +24,8 @@ interface IMessage {
   id: number
   sender: string
   content: string
+  color: string
+  avatar: string
 }
 
 const Messaging = () => {
@@ -34,7 +37,7 @@ const Messaging = () => {
   const { userName } = useUserStore()
   const inputRef = useRef(null)
   const newMessageRef = useRef<null | HTMLParagraphElement>(null)
-  const { userColor } = useUserStore()
+  const { userColor, userAvatar } = useUserStore()
 
   useEffect(() => {
     initiate()
@@ -73,7 +76,6 @@ const Messaging = () => {
 
     channel.on('MemberLeft', async (memberId) => {
       console.log('Member left:', memberId)
-      // const a = (client as (RtmClient | null) & { avatar: string }).avatar
       await getChannelMembers()
     })
 
@@ -81,17 +83,31 @@ const Messaging = () => {
       console.log('Member count:', memberCount)
     })
 
-    channel.on('ChannelMessage', (message, memberId, messagePros) => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: messagePros.serverReceivedTs,
-          sender: memberId,
-          content: (message as RtmTextMessage).text,
-        },
-      ])
-      // newMessageRef.current?.scrollIntoView(scrollOption)
-    })
+    channel.on(
+      'ChannelMessage',
+      // @ts-ignore
+      // ({ content, avatar, color }, memberId, messagePros) => {
+      (message, memberId, messagePros) => {
+        console.log(message)
+
+        const { content, avatar, color }: any = JSON.parse(
+          (message as RtmTextMessage).text
+        )
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            id: messagePros.serverReceivedTs,
+            sender: memberId,
+            // content: (message as RtmTextMessage).text,
+            content,
+            color,
+            avatar,
+          },
+        ])
+        // newMessageRef.current?.scrollIntoView(scrollOption)
+      }
+    )
 
     await channel.join()
     await getChannelMembers()
@@ -123,17 +139,13 @@ const Messaging = () => {
           privilegeExpiredTs: getTokenExpireTime(),
         },
       })
-      console.log('token', clientToken)
       await client.login({ uid: userName, token: clientToken })
-      console.log('here 1')
       // await client.setLocalUserAttributes({ avatar: avatarPlaceholder })
-      await client.setLocalUserAttributes({
-        avatar: randomInList(avatarList).src!,
-      })
+      // await client.setLocalUserAttributes({
+      //   avatar: randomInList(avatarList).src!,
+      // })
 
-      console.log('here 2')
-      console.log(client)
-      setRtmClient(client)
+      // setRtmClient(client)
       setIsJoined(true)
     } catch (error) {
       console.log(error)
@@ -173,7 +185,15 @@ const Messaging = () => {
       console.log('Channel is not available')
       return
     }
-    await channel.sendMessage({ text: msg })
+    await channel.sendMessage({
+      text: JSON.stringify({
+        content: msg,
+        avatar: userAvatar,
+        color: userColor,
+      }),
+      // text: msg,
+      messageType: 'TEXT',
+    })
     // newMessageRef.current?.scrollIntoView(scrollOption)
   }
 
@@ -193,7 +213,13 @@ const Messaging = () => {
       await sendMessage(inputMessage)
       setMessages((prevMessages) => [
         ...prevMessages,
-        { id: Date.now(), sender: userName, content: inputMessage },
+        {
+          id: Date.now(),
+          sender: userName,
+          content: inputMessage,
+          color: userColor,
+          avatar: userAvatar,
+        },
       ])
       setInputMessage('')
     }
@@ -225,14 +251,17 @@ const Messaging = () => {
             scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
             scrollbar-thumb-rounded-md'
           >
-            {messages.map(({ id, sender, content }, index) => (
+            {messages.map(({ id, sender, content, color, avatar }, index) => (
               <p
                 key={id}
                 className='mb-[6px] text-sm'
                 ref={index === messages.length - 1 ? newMessageRef : null}
                 // ref={newMessageRef}
               >
-                <span className={cx('font-semibold', `text-name-${userColor}`)}>
+                {/* <span className={cx('font-semibold', `text-name-${userColor}`)}> */}
+                {/* <span className={cx('font-semibold', `text-user-${color}`)}> */}
+                <span className={cx('font-semibold')} style={{ color }}>
+                  {/* <span className={cx('font-semibold', `text-name-${'blue'}`)}> */}
                   {sender}
                 </span>
                 <span className='mr-[6px] ml-[1px]'>:</span>
