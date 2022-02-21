@@ -1,5 +1,6 @@
 import { AgoraVideoPlayer } from 'agora-rtc-react'
 import { IAgoraRTCClient, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
+import Controls from 'components/Controls'
 import { ICreateScreenVideoTrack, useScreenTracks } from 'config'
 import { appId } from 'constant'
 import { EClientRole } from 'enum'
@@ -13,10 +14,11 @@ interface IVideoProps {
   isScreen: boolean
   client: IAgoraRTCClient
   setHostUser: Dispatch<SetStateAction<IAgoraRTCRemoteUser | null>>
+  switchShareMode: () => void
 }
 
 const ScreenVideo = (props: IVideoProps) => {
-  const { isScreen, client, setHostUser } = props
+  const { isScreen, client, setHostUser, switchShareMode } = props
   const { ready: readyScreen, tracks } =
     useScreenTracks() as ICreateScreenVideoTrack
   const { roles, roomName } = useRoomStore()
@@ -83,16 +85,32 @@ const ScreenVideo = (props: IVideoProps) => {
     }
   }, [])
 
+  function unpublish() {
+    client.unpublish(tracks)
+  }
+
+  function publish() {
+    client.publish(tracks)
+  }
+
   return (
-    <div className='video-list h-full grid'>
-      <div>
-        {isScreen && tracks && (
-          <AgoraVideoPlayer
-            videoTrack={tracks}
-            style={{ height: '100%', width: '100%' }}
+    <div className='h-full flex flex-col'>
+      {isScreen && tracks && (
+        <>
+          <div className='video-list flex-1 grid'>
+            <AgoraVideoPlayer videoTrack={tracks} className='h-full w-full' />
+          </div>
+          <Controls
+            client={client}
+            tracks={tracks}
+            publish={publish}
+            unpublish={unpublish}
+            isHost={isHost}
+            isScreen={isScreen}
+            switchShareMode={switchShareMode}
           />
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }

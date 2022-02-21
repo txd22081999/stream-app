@@ -52,25 +52,6 @@ const Rooms = () => {
       console.error(error)
     }
   }
-
-  async function createStreamVideo() {
-    const stream = await createStream({
-      audio: true,
-      video: true,
-      screen: true,
-      screenAudio: true,
-    })
-    await stream.init(
-      () => {
-        console.log('success')
-      },
-      (e) => {
-        console.log('fail', e)
-      }
-    )
-    stream.play('stream-box', { fit: 'cover', muted: false })
-  }
-
   function createRoom(e: any): void {
     e.preventDefault()
     const roomName = e.target[0].value

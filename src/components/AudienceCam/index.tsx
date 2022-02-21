@@ -1,20 +1,8 @@
-import { AgoraVideoPlayer } from 'agora-rtc-react'
-import {
-  IAgoraRTCClient,
-  IAgoraRTCRemoteUser,
-  ICameraVideoTrack,
-  ILocalTrack,
-  ILocalVideoTrack,
-  IMicrophoneAudioTrack,
-} from 'agora-rtc-sdk-ng'
-import { useMicrophoneAndCameraTracks } from 'config'
+import { IAgoraRTCClient, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
 import { appId } from 'constant'
-import { EClientRole } from 'enum'
 import { useEffect, useState } from 'react'
 import { useRoomStore, useUserStore } from 'store'
-import { IClientRoleState } from 'store/room-store'
 import { generateRTCToken } from 'utils/generate-token'
-import { getTokenExpireTime } from 'utils/token-expire-time'
 
 interface IAudienceCCamProps {
   client: IAgoraRTCClient
@@ -24,9 +12,6 @@ const AudienceCam = (props: IAudienceCCamProps) => {
   const { client } = props
   const { rtcToken, setRtcToken } = useUserStore()
   const { roomName } = useRoomStore()
-  // const roleInRoom: IClientRoleState | undefined = roles.find(
-  //   (item) => item.roomName === roomName
-  // )
   const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
   const [start, setStart] = useState(false)
 

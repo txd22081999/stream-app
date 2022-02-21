@@ -12,7 +12,6 @@ import './style.scss'
 
 const Stream = (props: any) => {
   const { roomName, roles } = useRoomStore()
-  const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([])
   const client = useClient()
 
   const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
@@ -33,26 +32,28 @@ const Stream = (props: any) => {
   async function switchShareMode() {
     setIsScreen((prev) => !prev)
   }
+
   return (
     <div className='bg-black-main'>
       <h2>Room: {roomName}</h2>
-      <div className='flex gap-5'>
+      {/* <div className='flex gap-5'>
         <button onClick={switchShareMode}>Switch screen</button>
-      </div>
+      </div> */}
       <div className='video-container h-[85vh]'>
         {isHost && !isScreen && (
           <HostCam
             client={client}
             hostUser={hostUser}
-            switchShareMode={switchShareMode}
             isScreen={isScreen}
+            switchShareMode={switchShareMode}
           />
         )}
         {isHost && isScreen && (
           <ScreenVideo
-            isScreen={isScreen}
             client={client}
+            isScreen={isScreen}
             setHostUser={setHostUser}
+            switchShareMode={switchShareMode}
           />
         )}
         {!isHost && <AudienceCam client={client} />}

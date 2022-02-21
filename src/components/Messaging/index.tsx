@@ -1,24 +1,11 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
-import React, { useEffect, useState } from 'react'
-import { GoPrimitiveDot } from 'react-icons/go'
-import {
-  appCertificate,
-  appId,
-  avatarList,
-  avatarPlaceholder,
-  RtmClientCustom,
-  scrollOption,
-} from 'constant'
-import { ApiAxios, RTMTokenAxios } from 'config/axios-config'
-import { useRoomStore, useUserStore } from 'store'
-import { getTokenExpireTime } from 'utils/token-expire-time'
-import { useRef } from 'react'
 import cx from 'classnames'
-import { randomInList } from 'utils/random-of-list'
-import { MethodSignature } from 'typescript'
-import { log } from 'console'
+import { ApiAxios, RTMTokenAxios } from 'config/axios-config'
+import { appCertificate, appId, scrollOption } from 'constant'
+import React, { useEffect, useRef, useState } from 'react'
+import { useRoomStore, useUserStore } from 'store'
 import { IMember } from 'store/room-store'
-import qs from 'querystring'
+import { getTokenExpireTime } from 'utils/token-expire-time'
 
 let client: RtmClient | null = null
 let channel: RtmChannel | null = null
@@ -35,8 +22,8 @@ const Messaging = () => {
   const [isJoined, setIsJoined] = useState<boolean>(false)
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
-  const [members, setMembers] = useState<string[]>([])
-  const { roomName, setAudiences, setRtmClient } = useRoomStore()
+  // const [members, setMembers] = useState<string[]>([])
+  const { roomName, setAudiences } = useRoomStore()
   const { userName } = useUserStore()
   const inputRef = useRef(null)
   const newMessageRef = useRef<null | HTMLParagraphElement>(null)
@@ -138,7 +125,7 @@ const Messaging = () => {
       ({ userId, avatar }) => ({ id: userId, avatar })
     )
     if (channelMembers) {
-      setMembers(channelMembers)
+      // setMembers(channelMembers)
       setAudiences(audiences)
     }
   }

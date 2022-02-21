@@ -2,10 +2,7 @@ import { AgoraVideoPlayer } from 'agora-rtc-react'
 import {
   IAgoraRTCClient,
   IAgoraRTCRemoteUser,
-  ICameraVideoTrack,
   ILocalTrack,
-  ILocalVideoTrack,
-  IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng'
 import Controls from 'components/Controls'
 import { useMicrophoneAndCameraTracks } from 'config'
@@ -32,7 +29,6 @@ const HostCam = (props: IHostCamProps) => {
     (item) => item.roomName === roomName
   )
   const isHost: boolean = roleInRoom?.role === EClientRole.HOST
-  const [start, setStart] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -42,16 +38,10 @@ const HostCam = (props: IHostCamProps) => {
 
   useEffect(() => {
     const initializeCam = async (roomName: string) => {
-      console.log('initializeCam')
-
       client.on('user-published', async (user, mediaType) => {
-        console.log('SUBCRIBE REMOTE')
-        console.log(user)
-        console.log(user.videoTrack?.isPlaying)
         if (!isHost) {
           await client.subscribe(user, mediaType)
         }
-        // setHostUser(user)
       })
 
       client.on('stream-type-changed', (uid, streamType) => {
@@ -90,9 +80,7 @@ const HostCam = (props: IHostCamProps) => {
       if (tracks) {
         await client.publish(tracks)
         console.log('publish cam here')
-        // setIsScreen(false)
       }
-      if (!start) setStart(true)
     }
 
     if (ready && tracks) {
@@ -103,31 +91,6 @@ const HostCam = (props: IHostCamProps) => {
       }
     }
   }, [client, ready])
-
-  // useEffect(() => {
-  //   ;(async () => {
-  //     console.log(screenTrack)
-  //     if (isScreen) {
-  //       console.log('ADD SCREEN')
-  //       await client.unpublish(tracks as ILocalTrack[])
-  //       if (screenTrack) {
-  //         console.log('REMOVE CAM')
-  //         await client.publish(screenTrack)
-  //       }
-  //     } else {
-  //       console.log('ADD CAM')
-
-  //       if (screenTrack) {
-  //         console.log('REMOVE SCREEN')
-  //         await client.unpublish(screenTrack)
-  //       }
-  //       await client.publish(tracks as ILocalTrack[])
-  //     }
-  //   })()
-  // }, [isScreen])
-
-  console.log('ready', ready)
-  console.log(tracks && ready)
 
   function unpublish() {
     client.unpublish(tracks as ILocalTrack[])
@@ -141,6 +104,7 @@ const HostCam = (props: IHostCamProps) => {
     if (tracks && ready) {
       return (
         <div className='h-full flex flex-col'>
+          <button onClick={switchShareMode}>switch</button>
           <div className='video-list flex-1 grid'>
             <AgoraVideoPlayer
               videoTrack={tracks[1]}
@@ -150,16 +114,12 @@ const HostCam = (props: IHostCamProps) => {
           <Controls
             client={client}
             tracks={tracks}
-            setStart={setStart}
             publish={publish}
             unpublish={unpublish}
             isHost={isHost}
             isScreen={isScreen}
             switchShareMode={switchShareMode}
           />
-          {/* <div>
-            <button onClick={switchShareMode}>Switch</button>
-          </div> */}
         </div>
       )
     }
