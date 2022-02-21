@@ -1,19 +1,23 @@
 import { createStream } from 'agora-rtc-sdk'
 import { AgoraAxios } from 'config/axios-config'
+import { colorList } from 'constant'
 import { EClientRole } from 'enum'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useRoomStore } from 'store'
+import { useRoomStore, useUserStore } from 'store'
 import { IRoom } from 'store/room-store'
+import { randomInList } from 'utils/random-of-list'
 
 const Rooms = () => {
   const [showCreateRoom, setShowCreateRoom] = useState<boolean>(false)
   const { rooms, roles, setRoomName, setRooms, setTotalRoom, addRole } =
     useRoomStore()
+  const { setUserColor } = useUserStore()
   const navigate = useNavigate()
 
   useEffect(() => {
     fetchRoomList()
+    setUserColor(randomInList(colorList))
   }, [])
 
   async function fetchRoomList(): Promise<void> {

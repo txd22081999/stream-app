@@ -10,6 +10,8 @@ interface IUserState {
   setRtcToken: (token: string) => void
   uid: number
   setUid: (uid: number) => void
+  userColor: string
+  setUserColor: (color: string) => void
 }
 
 const useUserStore = create(
@@ -17,12 +19,18 @@ const useUserStore = create(
     (set: SetState<IUserState>, get: GetState<IUserState>) => ({
       userName: '',
       setUserName: (name: string) => set(() => ({ userName: name })),
+
       rtmToken: '',
       setRtmToken: (token: string) => set(() => ({ rtcToken: token })),
+
       rtcToken: '',
       setRtcToken: (token: string) => set(() => ({ rtcToken: token })),
+
       uid: 0,
       setUid: (uid: number) => set(() => ({ uid })),
+
+      userColor: '',
+      setUserColor: (color: string) => set(() => ({ userColor: color })),
     }),
     {
       name: 'user-storage',

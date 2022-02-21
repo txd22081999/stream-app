@@ -1,13 +1,22 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
 import React, { useEffect, useState } from 'react'
 import { GoPrimitiveDot } from 'react-icons/go'
-import { appCertificate, appId, scrollOption } from 'constant'
+import {
+  appCertificate,
+  appId,
+  avatarList,
+  avatarPlaceholder,
+  RtmClientCustom,
+  scrollOption,
+} from 'constant'
 import { RTMTokenAxios } from 'config/axios-config'
 import { useRoomStore, useUserStore } from 'store'
 import { getTokenExpireTime } from 'utils/token-expire-time'
 import { useRef } from 'react'
+import cx from 'classnames'
+import { randomInList } from 'utils/random-of-list'
 
-let client: RtmClient | null = null
+let client: RtmClientCustom | null = null
 let channel: RtmChannel | null = null
 
 interface IMessage {
@@ -21,10 +30,11 @@ const Messaging = () => {
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
   const [members, setMembers] = useState<string[]>([])
-  const { roomName, setAudiences } = useRoomStore()
+  const { roomName, setAudiences, setRtmClient } = useRoomStore()
   const { userName } = useUserStore()
   const inputRef = useRef(null)
   const newMessageRef = useRef<null | HTMLParagraphElement>(null)
+  const { userColor } = useUserStore()
 
   useEffect(() => {
     initiate()
@@ -39,8 +49,7 @@ const Messaging = () => {
   }, [])
 
   async function initiate() {
-    client = await AgoraRTM.createInstance(appId)
-    console.log(client)
+    client = (await AgoraRTM.createInstance(appId)) as RtmClientCustom
 
     if (!client) {
       console.log('Empty client')
@@ -64,7 +73,7 @@ const Messaging = () => {
 
     channel.on('MemberLeft', async (memberId) => {
       console.log('Member left:', memberId)
-
+      // const a = (client as (RtmClient | null) & { avatar: string }).avatar
       await getChannelMembers()
     })
 
@@ -115,8 +124,16 @@ const Messaging = () => {
         },
       })
       console.log('token', clientToken)
-
       await client.login({ uid: userName, token: clientToken })
+      console.log('here 1')
+      // await client.setLocalUserAttributes({ avatar: avatarPlaceholder })
+      await client.setLocalUserAttributes({
+        avatar: randomInList(avatarList).src!,
+      })
+
+      console.log('here 2')
+      console.log(client)
+      setRtmClient(client)
       setIsJoined(true)
     } catch (error) {
       console.log(error)
@@ -215,7 +232,9 @@ const Messaging = () => {
                 ref={index === messages.length - 1 ? newMessageRef : null}
                 // ref={newMessageRef}
               >
-                <span className='font-semibold text-green-300'>{sender}</span>
+                <span className={cx('font-semibold', `text-name-${userColor}`)}>
+                  {sender}
+                </span>
                 <span className='mr-[6px] ml-[1px]'>:</span>
                 <span>{content}</span>
               </p>

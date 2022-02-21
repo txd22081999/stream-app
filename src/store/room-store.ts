@@ -1,3 +1,4 @@
+import { RtmClientCustom } from 'constant'
 import { EClientRole } from 'enum'
 import isEqual from 'lodash/isEqual'
 import unionWith from 'lodash/unionWith'
@@ -30,6 +31,9 @@ interface IRoomState {
 
   audiences: string[]
   setAudiences: (audiences: string[]) => void
+
+  rtmClient: RtmClientCustom | null
+  setRtmClient: (client: RtmClientCustom | null) => void
 }
 
 const useRoomStore = create(
@@ -57,6 +61,10 @@ const useRoomStore = create(
 
       audiences: [] as string[],
       setAudiences: (audiences: string[]) => set(() => ({ audiences })),
+
+      rtmClient: null as RtmClientCustom | null,
+      setRtmClient: (client: RtmClientCustom | null) =>
+        set(() => ({ rtmClient: client })),
     }),
     {
       name: 'room-storage',
