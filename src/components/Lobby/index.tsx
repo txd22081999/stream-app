@@ -42,7 +42,7 @@ const Lobby = () => {
               <input
                 type='text'
                 name='name'
-                className='border-2 ml-2 py-1 px-2 text-white w-full bg-transparent border-transparent outline-0'
+                className='border-2 ml-2 py-1 px-2 text-white w-full bg-transparent border-transparent outline-0 focus:outline-none'
               />
             </div>
           </div>

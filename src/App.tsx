@@ -18,7 +18,7 @@ const App = () => {
     <BrowserRouter>
       <div className='App h-screen w-screen bg-black text-dark-white flex flex-col'>
         <header className='w-full bg-gray-custom flex justify-between items-center px-8 py-1 mb-1'>
-          <NavLink to='/' data-tip='Home'>
+          <NavLink to='/' data-tip='Lobby'>
             <div className='flex items-center'>
               <img src={StreamLogo} alt='logo' className='w-12 mr-2' />
               <h1 className='text-3xl' style={{ fontFamily: 'Target' }}>
@@ -27,7 +27,7 @@ const App = () => {
             </div>
           </NavLink>
 
-          <NavLink to='/' data-tip='Home'>
+          <NavLink to='/' data-tip='Lobby'>
             <button className='text-sm px-2 py-2 bg-input rounded-md'>
               <AiTwotoneHome className='text-xl' />
             </button>
