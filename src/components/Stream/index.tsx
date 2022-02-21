@@ -1,4 +1,4 @@
-import { IAgoraRTCRemoteUser, ILocalVideoTrack } from 'agora-rtc-sdk-ng'
+import { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
 import AudienceCam from 'components/AudienceCam'
 import HostCam from 'components/HostCam'
 import ScreenVideo from 'components/ScreenVideo'
@@ -6,11 +6,9 @@ import { useClient } from 'config'
 import { videoConfig } from 'constant'
 import { EClientRole } from 'enum'
 import { useEffect, useState } from 'react'
-import { useRoomStore, useUserStore } from 'store'
+import { useRoomStore } from 'store'
 import { IClientRoleState } from 'store/room-store'
 import './style.scss'
-
-// let readyScreen: boolean = false
 
 const Stream = (props: any) => {
   const { roomName, roles } = useRoomStore()
@@ -18,8 +16,6 @@ const Stream = (props: any) => {
   const client = useClient()
 
   const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
-  // const [screenTrack, setScreenTrack] = useState<ILocalVideoTrack | null>(null)
-
   const [isScreen, setIsScreen] = useState<boolean>(false)
   const roleInRoom: IClientRoleState | undefined = roles.find(
     (item) => item.roomName === roomName
@@ -43,12 +39,13 @@ const Stream = (props: any) => {
       <div className='flex gap-5'>
         <button onClick={switchShareMode}>Switch screen</button>
       </div>
-      <div className='video-container h-[80vh]'>
+      <div className='video-container h-[85vh]'>
         {isHost && !isScreen && (
           <HostCam
             client={client}
             hostUser={hostUser}
             switchShareMode={switchShareMode}
+            isScreen={isScreen}
           />
         )}
         {isHost && isScreen && (

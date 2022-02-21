@@ -1,6 +1,6 @@
 import { createStream } from 'agora-rtc-sdk'
 import { AgoraAxios, ApiAxios } from 'config/axios-config'
-import { avatarList, colorList } from 'constant'
+import { colorList } from 'constant'
 import { EClientRole } from 'enum'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -10,20 +10,18 @@ import { randomInList } from 'utils/random-of-list'
 
 const Rooms = () => {
   const [showCreateRoom, setShowCreateRoom] = useState<boolean>(false)
-  const { rooms, roles, setRoomName, setRooms, setTotalRoom, addRole } =
-    useRoomStore()
-  const { userName, setUserColor, setUserAvatar } = useUserStore()
+  const { rooms, setRoomName, setRooms, setTotalRoom, addRole } = useRoomStore()
+  const { userName, userAvatar, setUserColor } = useUserStore()
   const navigate = useNavigate()
 
   useEffect(() => {
     updateUserAvatar()
     fetchRoomList()
     setUserColor(randomInList(colorList))
-  }, [])
+  }, [userAvatar])
 
   async function updateUserAvatar(): Promise<void> {
-    const avatarSrc: string = randomInList(avatarList).src!
-    setUserAvatar(avatarSrc)
+    const avatarSrc: string = userAvatar
     await ApiAxios.post('/user/avatar', {
       userId: userName,
       avatar: avatarSrc,

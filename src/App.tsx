@@ -22,7 +22,7 @@ const App = () => {
             <div className='flex items-center'>
               <img src={StreamLogo} alt='logo' className='w-12 mr-2' />
               <h1 className='text-3xl' style={{ fontFamily: 'Target' }}>
-                Stric
+                Strix
               </h1>
             </div>
           </NavLink>

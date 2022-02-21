@@ -1,12 +1,12 @@
-import { avatarList, avatarPlaceholder, IAvatar } from 'constant'
+import cx from 'classnames'
+import { avatarList, IAvatar } from 'constant'
 import React, { useState } from 'react'
-import { BsCartX } from 'react-icons/bs'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from 'store'
-import cx from 'classnames'
+import { getAvatarPath } from 'utils'
 
 const Lobby = () => {
-  const { setUserName } = useUserStore()
+  const { setUserName, setUserAvatar } = useUserStore()
   const navigate = useNavigate()
   const [avatar, setAvatar] = useState<number | null>(null)
 
@@ -23,14 +23,15 @@ const Lobby = () => {
 
   function onAvatarClick(id: number): void {
     setAvatar(id)
+    const avatar = avatarList.find(({ id: avatarId }) => avatarId === id)?.src
+    setUserAvatar(avatar || '')
   }
 
   return (
-    <div className='grid place-items-center h-full'>
-      {/* <div> */}
+    <div className='grid place-items-center h-full -translate-y-[2%]'>
       <div className='max-w-[500px] bg-black-box p-10 rounded-lg'>
         <h2 className='font-semibold text-3xl text-center mb-10'>
-          Welcome to STRIC
+          Welcome to STRIX
         </h2>
         <form action='' onSubmit={submitName}>
           <div className='mb-6'>
@@ -46,7 +47,7 @@ const Lobby = () => {
               {avatarList.map(({ id, src }, index) => (
                 <img
                   key={id}
-                  src={src}
+                  src={getAvatarPath(src)}
                   alt={'avatar' + index}
                   className={cx(
                     'w-16 h-16 rounded-full cursor-pointer transition-[outline] duration-150 ease-in select-none outline outline-[3px]',
@@ -67,7 +68,6 @@ const Lobby = () => {
             rounded-md transition-[background] duration-200 ease-in hover:bg-purple-600'
           />
         </form>
-        {/* <button>Create new room</button> */}
       </div>
     </div>
   )

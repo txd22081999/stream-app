@@ -1,22 +1,13 @@
 import { AgoraVideoPlayer } from 'agora-rtc-react'
-import {
-  IAgoraRTCRemoteUser,
-  ICameraVideoTrack,
-  IMicrophoneAudioTrack,
-  ILocalAudioTrack,
-  ILocalVideoTrack,
-  IAgoraRTCClient,
-} from 'agora-rtc-sdk-ng'
+import { IAgoraRTCClient, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
 import { ICreateScreenVideoTrack, useScreenTracks } from 'config'
-import { videoConfig } from 'constant'
+import { appId } from 'constant'
 import { EClientRole } from 'enum'
-import { Dispatch, useEffect } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 import { useRoomStore } from 'store'
-import { appCertificate, appId } from 'constant'
+import { IClientRoleState } from 'store/room-store'
 import { generateRTCToken } from 'utils/generate-token'
 import './style.scss'
-import { SetStateAction } from 'react'
-import { IClientRoleState } from 'store/room-store'
 
 interface IVideoProps {
   isScreen: boolean

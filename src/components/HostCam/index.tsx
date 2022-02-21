@@ -7,6 +7,7 @@ import {
   ILocalVideoTrack,
   IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng'
+import Controls from 'components/Controls'
 import { useMicrophoneAndCameraTracks } from 'config'
 import { appId } from 'constant'
 import { EClientRole } from 'enum'
@@ -18,11 +19,12 @@ import { generateRTCToken } from 'utils/generate-token'
 interface IHostCamProps {
   client: IAgoraRTCClient
   hostUser: IAgoraRTCRemoteUser | null
+  isScreen: boolean
   switchShareMode: () => {}
 }
 
 const HostCam = (props: IHostCamProps) => {
-  const { client, hostUser, switchShareMode } = props
+  const { client, hostUser, isScreen, switchShareMode } = props
   const { ready, tracks } = useMicrophoneAndCameraTracks()
   const { rtcToken, setRtcToken } = useUserStore()
   const { roomName, roles } = useRoomStore()
@@ -127,52 +129,53 @@ const HostCam = (props: IHostCamProps) => {
   console.log('ready', ready)
   console.log(tracks && ready)
 
+  function unpublish() {
+    client.unpublish(tracks as ILocalTrack[])
+  }
+
+  function publish() {
+    client.publish(tracks as ILocalTrack[])
+  }
+
   if (isHost) {
-    return (
-      <>
-        <div className='video-list h-full grid'>
-          {tracks && ready && (
+    if (tracks && ready) {
+      return (
+        <div className='h-full flex flex-col'>
+          <div className='video-list flex-1 grid'>
             <AgoraVideoPlayer
               videoTrack={tracks[1]}
               className='h-full w-full'
             />
-          )}
-
-          {/* <AgoraVideoPlayer
-            videoTrack={
-              !isHost && hostUser ? hostUser.videoTrack! : tracksCam[1]
-            }
-            className='h-full w-full'
-          /> */}
+          </div>
+          <Controls
+            client={client}
+            tracks={tracks}
+            setStart={setStart}
+            publish={publish}
+            unpublish={unpublish}
+            isHost={isHost}
+            isScreen={isScreen}
+            switchShareMode={switchShareMode}
+          />
+          {/* <div>
+            <button onClick={switchShareMode}>Switch</button>
+          </div> */}
         </div>
-        <div>
-          <button
-            onClick={() => client.unpublish(tracks as ILocalTrack[])}
-            className='mr-5'
-          >
-            unpublish
-          </button>
-          <button
-            onClick={() => client.publish(tracks as ILocalTrack[])}
-            className='mr-5'
-          >
-            publish
-          </button>
-          <button onClick={switchShareMode}>Switch</button>
-        </div>
-      </>
-    )
+      )
+    }
   }
 
   if (!isHost && hostUser) {
     return (
-      <div className='video-list h-full grid'>
-        {hostUser.videoTrack && ready && (
-          <AgoraVideoPlayer
-            videoTrack={hostUser.videoTrack}
-            className='h-full w-full'
-          />
-        )}
+      <div className='h-full flex flex-col'>
+        <div className='video-list flex-1 grid'>
+          {hostUser.videoTrack && ready && (
+            <AgoraVideoPlayer
+              videoTrack={hostUser.videoTrack}
+              className='h-full w-full'
+            />
+          )}
+        </div>
       </div>
     )
   }

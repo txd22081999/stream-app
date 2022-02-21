@@ -2,6 +2,7 @@ import cx from 'classnames'
 import { avatarPlaceholder } from 'constant'
 import React, { useEffect, useState } from 'react'
 import { useRoomStore, useUserStore } from 'store'
+import { getAvatarPath } from 'utils'
 import Messaging from '../Messaging'
 import Stream from '../Stream'
 
@@ -34,8 +35,7 @@ const Main = () => {
             return (
               <div key={id} className='flex items-center px-2 mb-3 '>
                 <img
-                  // src={avatarPlaceholder}
-                  src={avatar}
+                  src={getAvatarPath(avatar)}
                   alt='avatar'
                   className={cx(
                     'w-8 h-8 rounded-full mr-2',
