@@ -8,12 +8,12 @@ import Stream from '../Stream'
 const Main = () => {
   const { audiences, rtmClient } = useRoomStore()
   const { userName } = useUserStore()
-  const [a, seta] = useState('')
+  const [avatar, setAvatar] = useState<string>('')
 
   async function getClientAvatar(): Promise<string> {
     const att = await rtmClient?.getUserAttributes(userName)
     console.log('iii', att?.avatar!)
-    seta(att?.avatar! || '')
+    setAvatar(att?.avatar! || '')
     return att?.avatar! || ''
   }
 
@@ -29,13 +29,13 @@ const Main = () => {
           scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
           scrollbar-thumb-rounded-md py-2 px-2'
         >
-          {audiences.map((member) => {
-            const isMe: boolean = member === userName
+          {audiences.map(({ id, avatar }) => {
+            const isMe: boolean = id === userName
             return (
-              <div key={member} className='flex items-center px-2 mb-3 '>
+              <div key={id} className='flex items-center px-2 mb-3 '>
                 <img
                   // src={avatarPlaceholder}
-                  src={a}
+                  src={avatar}
                   alt='avatar'
                   className={cx(
                     'w-8 h-8 rounded-full mr-2',
@@ -43,7 +43,7 @@ const Main = () => {
                   )}
                 />
                 <p className='whitespace-nowrap text-md overflow-hidden text-ellipsis'>
-                  {member}
+                  {id}
                 </p>
               </div>
             )

@@ -9,15 +9,18 @@ import {
   RtmClientCustom,
   scrollOption,
 } from 'constant'
-import { RTMTokenAxios } from 'config/axios-config'
+import { ApiAxios, RTMTokenAxios } from 'config/axios-config'
 import { useRoomStore, useUserStore } from 'store'
 import { getTokenExpireTime } from 'utils/token-expire-time'
 import { useRef } from 'react'
 import cx from 'classnames'
 import { randomInList } from 'utils/random-of-list'
 import { MethodSignature } from 'typescript'
+import { log } from 'console'
+import { IMember } from 'store/room-store'
+import qs from 'querystring'
 
-let client: RtmClientCustom | null = null
+let client: RtmClient | null = null
 let channel: RtmChannel | null = null
 
 interface IMessage {
@@ -52,7 +55,7 @@ const Messaging = () => {
   }, [])
 
   async function initiate() {
-    client = (await AgoraRTM.createInstance(appId)) as RtmClientCustom
+    client = await AgoraRTM.createInstance(appId)
 
     if (!client) {
       console.log('Empty client')
@@ -70,7 +73,6 @@ const Messaging = () => {
 
     channel.on('MemberJoined', async (memberId) => {
       console.log('Member join:', memberId)
-
       await getChannelMembers()
     })
 
@@ -105,7 +107,6 @@ const Messaging = () => {
             avatar,
           },
         ])
-        // newMessageRef.current?.scrollIntoView(scrollOption)
       }
     )
 
@@ -115,9 +116,30 @@ const Messaging = () => {
 
   async function getChannelMembers() {
     const channelMembers = await channel?.getMembers()
+
+    if (!channelMembers) {
+      return
+    }
+    const {
+      data: channelMembersWithAvatar,
+    }: { data: { userId: string; avatar: string }[] } = await ApiAxios.get(
+      '/user/avatar',
+      {
+        params: {
+          userIds: JSON.stringify(channelMembers),
+          // userIds: channelMembers,
+          // hello: 'asd',
+        },
+      }
+    )
+    console.log(channelMembersWithAvatar)
+
+    const audiences: IMember[] = channelMembersWithAvatar.map(
+      ({ userId, avatar }) => ({ id: userId, avatar })
+    )
     if (channelMembers) {
       setMembers(channelMembers)
-      setAudiences(channelMembers)
+      setAudiences(audiences)
     }
   }
 
@@ -140,6 +162,7 @@ const Messaging = () => {
         },
       })
       await client.login({ uid: userName, token: clientToken })
+
       // await client.setLocalUserAttributes({ avatar: avatarPlaceholder })
       // await client.setLocalUserAttributes({
       //   avatar: randomInList(avatarList).src!,
@@ -164,14 +187,6 @@ const Messaging = () => {
     setIsJoined(false)
   }
 
-  async function joinChannel() {
-    if (!channel) {
-      console.log('Channel is not available')
-      return
-    }
-    await channel.join()
-  }
-
   async function leaveChannel() {
     if (!channel) {
       console.log('Channel is not available')
@@ -194,7 +209,6 @@ const Messaging = () => {
       // text: msg,
       messageType: 'TEXT',
     })
-    // newMessageRef.current?.scrollIntoView(scrollOption)
   }
 
   useEffect(() => {
@@ -241,6 +255,14 @@ const Messaging = () => {
     // element.style.height = "1px";
     // element.style.height = (25+element.scrollHeight)+"px";
   }
+  // ;(async () => {
+  //   console.log(userName)
+  //   const a = await client?.getChannelAttributes(roomName)
+  //   console.log(a)
+  // })()
+  // client?.getUserAttributes('d2').then((res) => console.log(res))
+
+  console.log(client)
 
   return (
     <div className='overflow-hidden flex flex-col w-full py-2 h-full bg-black-main'>

@@ -16,6 +16,11 @@ export interface IClientRoleState {
   role: EClientRole
 }
 
+export interface IMember {
+  id: string
+  avatar: string
+}
+
 interface IRoomState {
   roomName: string
   setRoomName: (name: string) => void
@@ -29,8 +34,8 @@ interface IRoomState {
   roles: IClientRoleState[]
   addRole: (newRole: IClientRoleState) => void
 
-  audiences: string[]
-  setAudiences: (audiences: string[]) => void
+  audiences: IMember[]
+  setAudiences: (audiences: IMember[]) => void
 
   rtmClient: RtmClientCustom | null
   setRtmClient: (client: RtmClientCustom | null) => void
@@ -50,17 +55,14 @@ const useRoomStore = create(
 
       roles: [] as IClientRoleState[],
       addRole: (newRole: IClientRoleState) =>
-        // set(() => ({ roles: [...get().roles, newRole] })),
         set(() => {
-          // const roleList = { roles: [...get().roles, newRole] }
-          // const roleList = union(get().roles, newRole) as any
           let roleList = [...get().roles, newRole]
           roleList = unionWith(roleList, isEqual)
           return { roles: roleList }
         }),
 
-      audiences: [] as string[],
-      setAudiences: (audiences: string[]) => set(() => ({ audiences })),
+      audiences: [] as IMember[],
+      setAudiences: (audiences: IMember[]) => set(() => ({ audiences })),
 
       rtmClient: null as RtmClientCustom | null,
       setRtmClient: (client: RtmClientCustom | null) =>

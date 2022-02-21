@@ -13,8 +13,10 @@ const RTMTokenAxios = axios.create({
   baseURL: RTM_TOKEN_BUILDER_URL,
   method: 'POST',
 })
+const ApiAxios = axios.create({
+  baseURL: API_ENDPOINT,
+})
 const AgoraAxios = axios.create({
-  // baseURL: AGORA_ENDPOINT,
   baseURL: API_ENDPOINT,
   auth: {
     username: process.env.REACT_APP_AGORA_CLIENT_ID!,
@@ -22,4 +24,4 @@ const AgoraAxios = axios.create({
   },
 })
 
-export { RTCTokenAxios, RTMTokenAxios, AgoraAxios }
+export { RTCTokenAxios, RTMTokenAxios, AgoraAxios, ApiAxios }

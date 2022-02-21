@@ -1,5 +1,5 @@
 import { createStream } from 'agora-rtc-sdk'
-import { AgoraAxios } from 'config/axios-config'
+import { AgoraAxios, ApiAxios } from 'config/axios-config'
 import { avatarList, colorList } from 'constant'
 import { EClientRole } from 'enum'
 import React, { useEffect, useState } from 'react'
@@ -12,19 +12,28 @@ const Rooms = () => {
   const [showCreateRoom, setShowCreateRoom] = useState<boolean>(false)
   const { rooms, roles, setRoomName, setRooms, setTotalRoom, addRole } =
     useRoomStore()
-  const { setUserColor, setUserAvatar } = useUserStore()
+  const { userName, setUserColor, setUserAvatar } = useUserStore()
   const navigate = useNavigate()
 
   useEffect(() => {
+    updateUserAvatar()
     fetchRoomList()
     setUserColor(randomInList(colorList))
-    setUserAvatar(randomInList(avatarList).src!)
   }, [])
+
+  async function updateUserAvatar(): Promise<void> {
+    const avatarSrc: string = randomInList(avatarList).src!
+    setUserAvatar(avatarSrc)
+    await ApiAxios.post('/user/avatar', {
+      userId: userName,
+      avatar: avatarSrc,
+    })
+  }
 
   async function fetchRoomList(): Promise<void> {
     try {
       const { data } = await AgoraAxios.get('/channels', {
-        params: { page_no: 0, page_size: 5 },
+        params: { page_no: 0, page_size: 100 },
       })
       const { channels = [], total_size } = data
       const roomList: IRoom[] = channels.map(
