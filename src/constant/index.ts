@@ -50,43 +50,43 @@ export const colorList: string[] = [
 export const avatarList: IAvatar[] = [
   {
     id: 1,
-    src: 'penguin.jpeg',
+    src: 'penguin',
   },
   {
     id: 2,
-    src: 'elephant.png',
+    src: 'elephant',
   },
   {
     id: 3,
-    src: 'koala.png',
+    src: 'koala',
   },
   {
     id: 4,
-    src: 'girl.png',
+    src: 'girl',
   },
   {
     id: 5,
-    src: 'cat.jpeg',
+    src: 'cat',
   },
   {
     id: 6,
-    src: 'monk.jpeg',
+    src: 'monk',
   },
   {
     id: 7,
-    src: 'deer.jpeg',
+    src: 'deer',
   },
   {
     id: 8,
-    src: 'dog.png',
+    src: 'dog',
   },
   {
     id: 9,
-    src: 'monkey.jpeg',
+    src: 'monkey',
   },
   {
     id: 10,
-    src: 'punk.png',
+    src: 'punk',
   },
 ]
 // export const avatarList: IAvatar[] = [
