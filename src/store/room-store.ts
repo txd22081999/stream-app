@@ -9,6 +9,10 @@ export interface IRoom {
   roomName: string
   userCount: number
   roles: IClientRoleState[]
+  hostAvatar: string
+  hostName: string
+  roomId: string
+  thumbnail: string
 }
 
 export interface IClientRoleState {
@@ -39,6 +43,9 @@ interface IRoomState {
 
   rtmClient: RtmClientCustom | null
   setRtmClient: (client: RtmClientCustom | null) => void
+
+  // room: IRoom
+  // setRoom: (client: Partial<IRoom>) => void
 }
 
 const useRoomStore = create(
@@ -67,6 +74,10 @@ const useRoomStore = create(
       rtmClient: null as RtmClientCustom | null,
       setRtmClient: (client: RtmClientCustom | null) =>
         set(() => ({ rtmClient: client })),
+
+      // room: { roomName: '', userCount: 0, roles: [] } as IRoom,
+      // setRoom: (room: Partial<IRoom>) =>
+      //   set(() => ({ room: { ...get().room, ...room! } })),
     }),
     {
       name: 'room-storage',

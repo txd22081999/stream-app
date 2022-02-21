@@ -1,10 +1,12 @@
 import AgoraRTM, { RtmChannel, RtmClient, RtmTextMessage } from 'agora-rtm-sdk'
 import cx from 'classnames'
 import { ApiAxios, RTMTokenAxios } from 'config/axios-config'
-import { appCertificate, appId, scrollOption } from 'constant'
+import { appCertificate, appId, scrollOption, thumbnailList } from 'constant'
+import { EClientRole } from 'enum'
 import React, { useEffect, useRef, useState } from 'react'
 import { useRoomStore, useUserStore } from 'store'
-import { IMember } from 'store/room-store'
+import { IClientRoleState, IMember } from 'store/room-store'
+import { randomInList } from 'utils/random-of-list'
 import { getTokenExpireTime } from 'utils/token-expire-time'
 
 let client: RtmClient | null = null
@@ -23,11 +25,16 @@ const Messaging = () => {
   const [inputMessage, setInputMessage] = useState<string>('')
   const [messages, setMessages] = useState<IMessage[]>([])
   // const [members, setMembers] = useState<string[]>([])
-  const { roomName, setAudiences } = useRoomStore()
+  const { roomName, setAudiences, roles } = useRoomStore()
   const { userName } = useUserStore()
   const inputRef = useRef(null)
   const newMessageRef = useRef<null | HTMLParagraphElement>(null)
   const { userColor, userAvatar } = useUserStore()
+
+  const roleInRoom: IClientRoleState | undefined = roles.find(
+    (item) => item.roomName === roomName
+  )
+  const isHost: boolean = roleInRoom?.role === EClientRole.HOST
 
   useEffect(() => {
     initiate()
@@ -56,6 +63,16 @@ const Messaging = () => {
     await loginChat()
 
     const channelId = roomName
+
+    if (isHost) {
+      const thumbnail: string = randomInList(thumbnailList).src
+      await client.setChannelAttributes(channelId, {
+        thumbnail,
+        hostName: userName,
+        roomId: channelId,
+        hostAvatar: userAvatar,
+      })
+    }
     channel = await client.createChannel(channelId)
 
     channel.on('MemberJoined', async (memberId) => {
@@ -114,12 +131,9 @@ const Messaging = () => {
       {
         params: {
           userIds: JSON.stringify(channelMembers),
-          // userIds: channelMembers,
-          // hello: 'asd',
         },
       }
     )
-    console.log(channelMembersWithAvatar)
 
     const audiences: IMember[] = channelMembersWithAvatar.map(
       ({ userId, avatar }) => ({ id: userId, avatar })
@@ -149,11 +163,6 @@ const Messaging = () => {
         },
       })
       await client.login({ uid: userName, token: clientToken })
-
-      // await client.setLocalUserAttributes({ avatar: avatarPlaceholder })
-      // await client.setLocalUserAttributes({
-      //   avatar: randomInList(avatarList).src!,
-      // })
 
       // setRtmClient(client)
       setIsJoined(true)
@@ -193,7 +202,6 @@ const Messaging = () => {
         avatar: userAvatar,
         color: userColor,
       }),
-      // text: msg,
       messageType: 'TEXT',
     })
   }
@@ -242,12 +250,6 @@ const Messaging = () => {
     // element.style.height = "1px";
     // element.style.height = (25+element.scrollHeight)+"px";
   }
-  // ;(async () => {
-  //   console.log(userName)
-  //   const a = await client?.getChannelAttributes(roomName)
-  //   console.log(a)
-  // })()
-  // client?.getUserAttributes('d2').then((res) => console.log(res))
 
   console.log(client)
 
@@ -267,10 +269,7 @@ const Messaging = () => {
                 ref={index === messages.length - 1 ? newMessageRef : null}
                 // ref={newMessageRef}
               >
-                {/* <span className={cx('font-semibold', `text-name-${userColor}`)}> */}
-                {/* <span className={cx('font-semibold', `text-user-${color}`)}> */}
                 <span className={cx('font-semibold')} style={{ color }}>
-                  {/* <span className={cx('font-semibold', `text-name-${'blue'}`)}> */}
                   {sender}
                 </span>
                 <span className='mr-[6px] ml-[1px]'>:</span>
@@ -288,7 +287,7 @@ const Messaging = () => {
               onKeyUp={textAreaAdjust}
               value={inputMessage}
               className='text-sm w-full bg-transparent min-h-[10px] outline-none placeholder:text-gray-300 
-              resize-none scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+              resize-none leading-[1.3] h-[17px] scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
               scrollbar-thumb-rounded-md'
             />
           </div>

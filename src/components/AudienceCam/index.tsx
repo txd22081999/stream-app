@@ -17,7 +17,7 @@ const AudienceCam = (props: IAudienceCCamProps) => {
 
   useEffect(() => {
     const initializeCam = async (roomName: string) => {
-      console.log('initializeCam')
+      console.log('initialize Audience Cam')
 
       client.on('user-published', async (user, mediaType) => {
         console.log('SUBCRIBE REMOTE')
@@ -75,11 +75,7 @@ const AudienceCam = (props: IAudienceCCamProps) => {
     return (
       <div className='video-list h-full grid'>
         {hostUser.videoTrack && (
-          // <AgoraVideoPlayer
-          //   videoTrack={hostUser.videoTrack}
-          //   className='h-full w-full'
-          // />
-          <div id='stream-box' className='h-full w-full bg-slate-400'></div>
+          <div id='stream-box' className='h-full w-full bg-slate-800'></div>
         )}
       </div>
     )

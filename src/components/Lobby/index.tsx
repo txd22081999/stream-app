@@ -34,15 +34,21 @@ const Lobby = () => {
           Welcome to STRIX
         </h2>
         <form action='' onSubmit={submitName}>
-          <div className='mb-6'>
-            <label htmlFor='name' className='mr-5'>
+          <div className='mb-6 flex items-center'>
+            <label htmlFor='name' className='mr-4'>
               Enter your name
             </label>
-            <input type='text' name='name' className='border-2' />
+            <div className='bg-input rounded-lg flex-1'>
+              <input
+                type='text'
+                name='name'
+                className='border-2 ml-2 py-1 px-2 text-white w-full bg-transparent border-transparent outline-0'
+              />
+            </div>
           </div>
 
-          <div className='mb-8'>
-            <p className='mb-2'>Choose your avatar</p>
+          <div className='mb-10'>
+            <p className='mb-3'>Choose your avatar</p>
             <div className='avatars-container flex gap-x-5 gap-y-3 flex-wrap'>
               {avatarList.map(({ id, src }, index) => (
                 <img

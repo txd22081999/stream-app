@@ -33,6 +33,8 @@ export interface IAvatar {
   src: string
 }
 
+export interface IThumbnail extends IAvatar {}
+
 const Color = {
   red: '#F94801',
   blue: '#1C91FF',
@@ -89,6 +91,38 @@ export const avatarList: IAvatar[] = [
     src: 'punk',
   },
 ]
+
+export const thumbnailList: IThumbnail[] = [
+  {
+    id: 1,
+    src: 'fifa',
+  },
+  {
+    id: 2,
+    src: 'forza',
+  },
+  {
+    id: 3,
+    src: 'gta',
+  },
+  {
+    id: 4,
+    src: 'lol',
+  },
+  {
+    id: 5,
+    src: 'minecraft',
+  },
+  {
+    id: 6,
+    src: 'pubg',
+  },
+  {
+    id: 7,
+    src: 'valorant',
+  },
+]
+
 // export const avatarList: IAvatar[] = [
 //   {
 //     id: 1,

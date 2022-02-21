@@ -36,9 +36,7 @@ const Stream = (props: any) => {
   return (
     <div className='bg-black-main'>
       <h2>Room: {roomName}</h2>
-      {/* <div className='flex gap-5'>
-        <button onClick={switchShareMode}>Switch screen</button>
-      </div> */}
+
       <div className='video-container h-[85vh]'>
         {isHost && !isScreen && (
           <HostCam

@@ -8,7 +8,7 @@ import Controls from 'components/Controls'
 import { useMicrophoneAndCameraTracks } from 'config'
 import { appId } from 'constant'
 import { EClientRole } from 'enum'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRoomStore, useUserStore } from 'store'
 import { IClientRoleState } from 'store/room-store'
 import { generateRTCToken } from 'utils/generate-token'
@@ -104,7 +104,6 @@ const HostCam = (props: IHostCamProps) => {
     if (tracks && ready) {
       return (
         <div className='h-full flex flex-col'>
-          <button onClick={switchShareMode}>switch</button>
           <div className='video-list flex-1 grid'>
             <AgoraVideoPlayer
               videoTrack={tracks[1]}
