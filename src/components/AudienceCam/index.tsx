@@ -46,7 +46,6 @@ const AudienceCam = (props: IAudienceCCamProps) => {
     console.log('initialize Audience Cam')
 
     client.on('user-published', async (user, mediaType) => {
-      console.log('SUBCRIBE REMOTE')
       await client.subscribe(user, mediaType)
       user.audioTrack?.play()
       user.videoTrack?.play('stream-box', { fit: 'cover', mirror: true })

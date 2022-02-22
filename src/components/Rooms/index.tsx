@@ -126,12 +126,10 @@ const Rooms = () => {
       if (channels.length > 0) {
         const getChannelsAtributesPromises = channels.map(
           ({ channel_name }: { channel_name: string }) => {
-            console.log(channel_name)
             return client?.getChannelAttributes(channel_name)
           }
         )
         let attrs = await Promise.all(getChannelsAtributesPromises)
-        console.log(attrs[0])
         const attrsKeys = Object.keys(attrs[0])
         attrs = attrs.map((item) => {
           let result: { [key: string]: string } = {}
@@ -158,7 +156,6 @@ const Rooms = () => {
           keyBy(attrs, 'roomId')
         )
         const roomsWithAttributes = values(merged)
-        console.log(roomsWithAttributes)
         await setRooms(roomsWithAttributes)
       }
       setTotalRoom(total_size)

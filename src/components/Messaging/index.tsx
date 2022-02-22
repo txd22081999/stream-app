@@ -257,8 +257,6 @@ const Messaging = () => {
     // element.style.height = (25+element.scrollHeight)+"px";
   }
 
-  console.log(client)
-
   return (
     <div className='overflow-hidden flex flex-col w-full py-2 h-full bg-black-main pb-5'>
       {isJoined ? (

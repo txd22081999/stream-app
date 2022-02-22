@@ -40,7 +40,7 @@ const Color = {
   red: '#F94801',
   blue: '#1C91FF',
   pink: '#FF68B3',
-  green: '##00b900',
+  green: '#00b900',
   yellow: '#eded00',
   orange: '#ffa500',
 }
