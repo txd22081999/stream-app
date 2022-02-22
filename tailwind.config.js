@@ -12,10 +12,6 @@ module.exports = {
         ['black-box']: '#1F1F23',
         ['black-main']: '#18181B',
         input: '#464649',
-        // ['name-red']: '#F94801',
-        // ['name-blue']: '#1C91FF',
-        // ['name-pink']: '#FF68B3',
-        // ['name-green']: '#027F02',
         user: {
           red: '#f93a01',
           blue: '#1C91FF',

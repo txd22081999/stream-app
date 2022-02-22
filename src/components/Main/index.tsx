@@ -14,7 +14,7 @@ const Main = () => {
     <div
       className={cx(
         'stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] h-full gap-1',
-        `h-[${mainHeight}]`
+        'h-[calc(100&-72px)]'
       )}
     >
       <div className='flex flex-col'>
