@@ -2,7 +2,13 @@ import AgoraRTM, { RtmClient } from 'agora-rtm-sdk'
 import Loading from 'components/Loading'
 import RoomCard from 'components/RoomCard'
 import { AgoraAxios, ApiAxios, RTMTokenAxios } from 'config/axios-config'
-import { appCertificate, appId, colorList } from 'constant'
+import {
+  appCertificate,
+  appId,
+  buttonStyle,
+  colorList,
+  mainHeight,
+} from 'constant'
 import { EClientRole } from 'enum'
 import keyBy from 'lodash/keyBy'
 import merge from 'lodash/merge'
@@ -13,6 +19,56 @@ import { useRoomStore, useUserStore } from 'store'
 import { IRoom } from 'store/room-store'
 import { randomInList } from 'utils/random-of-list'
 import { getTokenExpireTime } from 'utils/token-expire-time'
+import { CgScreenMirror } from 'react-icons/cg'
+import cx from 'classnames'
+
+const dumbRooms: IRoom[] = [
+  {
+    hostAvatar: 'cat',
+    roomName: 'test',
+    hostName: 'Dr Disrespect',
+    roomId: '1',
+    thumbnail: 'valorant',
+    userCount: 20,
+    roles: [],
+  },
+  {
+    hostAvatar: 'cat',
+    roomName: 'test',
+    hostName: 'Dr Disrespect',
+    roomId: '1',
+    thumbnail: 'valorant',
+    userCount: 20,
+    roles: [],
+  },
+  {
+    hostAvatar: 'cat',
+    roomName: 'test',
+    hostName: 'Dr Disrespect',
+    roomId: '1',
+    thumbnail: 'valorant',
+    userCount: 20,
+    roles: [],
+  },
+  {
+    hostAvatar: 'cat',
+    roomName: 'test',
+    hostName: 'Dr Disrespect',
+    roomId: '1',
+    thumbnail: 'valorant',
+    userCount: 20,
+    roles: [],
+  },
+  {
+    hostAvatar: 'cat',
+    roomName: 'test',
+    hostName: 'Dr Disrespect',
+    roomId: '1',
+    thumbnail: 'valorant',
+    userCount: 20,
+    roles: [],
+  },
+]
 
 const Rooms = () => {
   const [showCreateRoom, setShowCreateRoom] = useState<boolean>(false)
@@ -112,7 +168,7 @@ const Rooms = () => {
   }
   function createRoom(e: any): void {
     e.preventDefault()
-    const roomName = e.target[0].value
+    const roomName = e.target[0].value.trim()
     if (!roomName) return
     addRole({ role: EClientRole.HOST, roomName })
     navigate('/stream')
@@ -121,32 +177,52 @@ const Rooms = () => {
   }
 
   return (
-    <div>
-      <h2>Room list</h2>
-      <button
-        className='bg-blue-400 rounded-md p-2'
-        onClick={() => setShowCreateRoom((prevShow) => !prevShow)}
-      >
-        Create room
-      </button>
+    <div className={cx('mx-[10%] my-[4vh]', `overflow-x-hidden`)}>
+      <div className='flex mb-8 items-center'>
+        {!showCreateRoom && (
+          <button
+            className={cx(buttonStyle, 'w-fit px-3 mr-10')}
+            onClick={() => setShowCreateRoom((prevShow) => !prevShow)}
+          >
+            New Room
+          </button>
+        )}
 
-      {showCreateRoom && (
-        <form onSubmit={createRoom}>
-          <label htmlFor='roomName'>Enter room name</label>
-          <div className='bg-input rounded-lg py-2 px-4'>
+        {showCreateRoom && (
+          <form onSubmit={createRoom} className='flex items-center'>
+            <label htmlFor='roomName' className='w-fit block mr-3'>
+              Room name
+            </label>
+
+            <div className='bg-input rounded-lg py-1 px-2'>
+              <input
+                type='text'
+                name='roomName'
+                placeholder='Enter room name'
+                className='border-none text-white bg-transparent placeholder:text-gray-500
+                outline-none focus:outline-none focus-within:outline-none w-[200px]'
+              />
+            </div>
+
             <input
-              type='text'
-              name='roomName'
-              className='border-2 ml-2 py-1 px-3 text-black bg-transparent'
+              type='submit'
+              className={cx(buttonStyle, 'w-fit px-3 ml-6')}
+              value='Create'
             />
-          </div>
-        </form>
-      )}
+          </form>
+        )}
+      </div>
+
+      <div className='flex items-center mb-4'>
+        <CgScreenMirror className='text-[32px]' />
+        <h2 className='text-[24px] ml-1 font-medium'>Live rooms</h2>
+      </div>
 
       {loading ? (
         <Loading loading={loading} />
       ) : (
-        <div className='px-[10%] flex flex-wrap'>
+        <div className='hello flex flex-wrap gap-x-6 gap-y-4 w-full overflow-x-hidden'>
+          {/* {dumbRooms.map( */}
           {rooms.map(
             ({ roomName, userCount, hostAvatar, hostName, thumbnail }) => (
               <div key={roomName}>

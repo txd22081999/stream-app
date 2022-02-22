@@ -16,7 +16,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <div className='App h-screen w-screen bg-black text-dark-white flex flex-col'>
+      <div className='App h-screen w-screen bg-black text-dark-white flex flex-col overflow-x-hidden'>
         <header className='w-full bg-gray-custom flex justify-between items-center px-8 py-1 mb-1'>
           <NavLink to='/' data-tip='Lobby'>
             <div className='flex items-center'>
@@ -35,7 +35,7 @@ const App = () => {
           <ReactTooltip />
         </header>
 
-        <div className='flex-1'>
+        <div className='flex-1 bg-black'>
           <Routes>
             <Route path='/' element={<Lobby />} />
             {isAuthenticated && (

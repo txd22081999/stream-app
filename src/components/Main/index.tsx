@@ -4,13 +4,19 @@ import { useRoomStore, useUserStore } from 'store'
 import { getAvatarPath } from 'utils'
 import Messaging from '../Messaging'
 import Stream from '../Stream'
+import { mainHeight } from 'constant'
 
 const Main = () => {
   const { audiences } = useRoomStore()
   const { userName } = useUserStore()
 
   return (
-    <div className='stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-1 h-[calc(100%-72px)]'>
+    <div
+      className={cx(
+        'stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] gap-1',
+        `h-[${mainHeight}]`
+      )}
+    >
       <div className='flex flex-col'>
         <h3 className='capitalize text-center py-3 text-lg font-medium bg-black-box mb-1'>
           participants ({audiences.length})

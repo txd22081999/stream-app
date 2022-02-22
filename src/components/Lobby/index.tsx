@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { avatarList, IAvatar } from 'constant'
+import { avatarList, buttonStyle, IAvatar } from 'constant'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from 'store'
@@ -51,13 +51,15 @@ const Lobby = () => {
         <form action='' onSubmit={submit}>
           <div className='mb-6 flex items-center'>
             <label htmlFor='name' className='mr-4'>
-              Enter your name
+              Your name
             </label>
             <div className='bg-input rounded-lg flex-1'>
               <input
                 type='text'
                 name='name'
-                className='border-2 ml-2 py-1 px-2 text-white w-full bg-transparent border-transparent outline-0 focus:outline-none'
+                placeholder='Enter your name'
+                className='border-2 py-1 px-2 text-white w-full bg-transparent border-transparent outline-0 
+                focus:outline-none focus-within:outline-none placeholder:text-gray-500'
               />
             </div>
           </div>
@@ -91,12 +93,7 @@ const Lobby = () => {
             </p>
           </div>
 
-          <input
-            type='submit'
-            value='Go'
-            className='w-full bg-purple-custom text-white font-medium py-2 cursor-pointer text-lg 
-            rounded-md transition-[background] duration-200 ease-in hover:bg-purple-600'
-          />
+          <input type='submit' value='Join' className={buttonStyle} />
         </form>
       </div>
     </div>

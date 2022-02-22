@@ -13,8 +13,8 @@ export const videoConfig: ClientConfig = {
 export const API_ENDPOINT: string =
   // 'https://stric-api.netlify.app/.netlify/functions/api'
   // 'http://localhost:9000/.netlify/functions/api'
-  // 'http://localhost:3002'
-  'https://strix-api.herokuapp.com'
+  'http://localhost:3002'
+// 'https://strix-api.herokuapp.com'
 export const AGORA_ENDPOINT: string = 'https://api.agora.io/dev/v1/'
 export const RTM_TOKEN_BUILDER_URL: string = `${API_ENDPOINT}/new-rtm-token`
 export const RTC_TOKEN_BUILDER_URL: string = `${API_ENDPOINT}/new-rtc-token`
@@ -166,3 +166,7 @@ export const thumbnailList: IThumbnail[] = [
 //     src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu-l0MxzVVrzoYNu2O9WYlUCKjklSxFyFC1tiIOhwlKBjWBrDRdfSS8GqNxBBBJoxz0Vw&usqp=CAU',
 //   },
 // ]
+
+export const buttonStyle: string = `w-full bg-purple-custom text-white font-medium py-2 cursor-pointer text-base
+rounded-md transition-[background] duration-150 ease-in hover:bg-purple-600 focus:outline-none`
+export const mainHeight: string = 'calc(100%-72px)'
