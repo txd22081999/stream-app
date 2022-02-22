@@ -11,9 +11,10 @@ export const videoConfig: ClientConfig = {
 }
 
 export const API_ENDPOINT: string =
-  'https://stric-api.netlify.app/.netlify/functions/api'
-// 'http://localhost:9000/.netlify/functions/api'
-// 'http://localhost:3002'
+  // 'https://stric-api.netlify.app/.netlify/functions/api'
+  // 'http://localhost:9000/.netlify/functions/api'
+  // 'http://localhost:3002'
+  'https://strix-api.herokuapp.com'
 export const AGORA_ENDPOINT: string = 'https://api.agora.io/dev/v1/'
 export const RTM_TOKEN_BUILDER_URL: string = `${API_ENDPOINT}/new-rtm-token`
 export const RTC_TOKEN_BUILDER_URL: string = `${API_ENDPOINT}/new-rtc-token`

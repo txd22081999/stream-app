@@ -9,11 +9,26 @@ const Lobby = () => {
   const { setUserName, setUserAvatar } = useUserStore()
   const navigate = useNavigate()
   const [avatar, setAvatar] = useState<number | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
-  function submitName(e: any) {
+  function submit(e: any) {
     e.preventDefault()
-    const userName: string = e.target[0].value
-    setUserName(userName)
+
+    const name: string = e.target[0].value.trim()
+    if (!avatar && !name) {
+      setErrorMessage('Fill in your name and select an avatar')
+      return
+    }
+    if (!avatar) {
+      setErrorMessage('Select an avatar')
+      return
+    }
+    if (!name) {
+      setErrorMessage('Fill in your name')
+      return
+    }
+    setUserName(name)
+    setErrorMessage('')
     navigate('/rooms')
   }
 
@@ -33,7 +48,7 @@ const Lobby = () => {
         <h2 className='font-semibold text-3xl text-center mb-10'>
           Welcome to STRIX
         </h2>
-        <form action='' onSubmit={submitName}>
+        <form action='' onSubmit={submit}>
           <div className='mb-6 flex items-center'>
             <label htmlFor='name' className='mr-4'>
               Enter your name
@@ -47,7 +62,7 @@ const Lobby = () => {
             </div>
           </div>
 
-          <div className='mb-10'>
+          <div className='mb-3'>
             <p className='mb-3'>Choose your avatar</p>
             <div className='avatars-container flex gap-x-5 gap-y-3 flex-wrap'>
               {avatarList.map(({ id, src }, index) => (
@@ -65,6 +80,15 @@ const Lobby = () => {
                 />
               ))}
             </div>
+
+            <p
+              className={cx(
+                'mt-3 mb-3 select-none text-red-600 min-h-[25px]',
+                errorMessage && 'visible'
+              )}
+            >
+              {errorMessage}
+            </p>
           </div>
 
           <input
