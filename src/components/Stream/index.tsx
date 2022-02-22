@@ -37,7 +37,7 @@ const Stream = (props: any) => {
     <div className='bg-black-main'>
       <h2>Room: {roomName}</h2>
 
-      <div className='video-container h-[85vh]'>
+      <div className='video-container h-[90vh]'>
         {isHost && !isScreen && (
           <HostCam
             client={client}
