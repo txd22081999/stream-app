@@ -110,7 +110,7 @@ const AudienceCam = (props: IAudienceCCamProps) => {
     )
   }
 
-  return <p className='text-sm'>Can not load stream</p>
+  return <p className='text-sm'>Loading stream...</p>
 }
 
 export default AudienceCam
