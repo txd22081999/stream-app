@@ -31,8 +31,12 @@ const HostCam = (props: IHostCamProps) => {
   const isHost: boolean = roleInRoom?.role === EClientRole.HOST
 
   useEffect(() => {
+    window.addEventListener('beforeunload', () => {
+      cleanup()
+    })
+
     return () => {
-      client.unpublish()
+      cleanup()
     }
   }, [])
 
@@ -92,6 +96,10 @@ const HostCam = (props: IHostCamProps) => {
     }
   }, [client, ready])
 
+  function cleanup() {
+    client.leave()
+  }
+
   function unpublish() {
     client.unpublish(tracks as ILocalTrack[])
   }
@@ -139,7 +147,7 @@ const HostCam = (props: IHostCamProps) => {
     )
   }
 
-  return <p>Error in initializing stream</p>
+  return <p className='text-sm'>Error in initializing stream</p>
 }
 
 export default HostCam

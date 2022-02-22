@@ -3,11 +3,17 @@ import cx from 'classnames'
 import { ApiAxios, RTMTokenAxios } from 'config/axios-config'
 import { appCertificate, appId, scrollOption, thumbnailList } from 'constant'
 import { EClientRole } from 'enum'
-import React, { useEffect, useRef, useState } from 'react'
+import React, {
+  TextareaHTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useRoomStore, useUserStore } from 'store'
 import { IClientRoleState, IMember } from 'store/room-store'
 import { randomInList } from 'utils/random-of-list'
 import { getTokenExpireTime } from 'utils/token-expire-time'
+import TextareaAutosize from 'react-textarea-autosize'
 
 let client: RtmClient | null = null
 let channel: RtmChannel | null = null
@@ -216,26 +222,26 @@ const Messaging = () => {
 
   async function onInputPress(e: any) {
     if (e.key === 'Enter' && !e.shiftKey) {
-      const message: string = inputMessage.trim()
+      const newMessage: string = e.target.value.trim()
 
-      if (!message) return
-      await sendMessage(inputMessage)
+      if (!newMessage) return
+      await sendMessage(newMessage)
+      setInputMessage('')
       setMessages((prevMessages) => [
         ...prevMessages,
         {
           id: Date.now(),
           sender: userName,
-          content: inputMessage,
+          content: newMessage,
           color: userColor,
           avatar: userAvatar,
         },
       ])
-      setInputMessage('')
     }
   }
 
   async function cleanup() {
-    await leaveChannel()
+    // await leaveChannel()
     await logoutChat()
   }
 
@@ -254,13 +260,13 @@ const Messaging = () => {
   console.log(client)
 
   return (
-    <div className='overflow-hidden flex flex-col w-full py-2 h-full bg-black-main'>
+    <div className='overflow-hidden flex flex-col w-full py-2 h-full bg-black-main pb-5'>
       {isJoined ? (
         <>
           <div
             className='message-list mt-1 mx-2 flex-1 overflow-x-hidden overflow-y-scroll mb-2
             scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
-            scrollbar-thumb-rounded-md'
+            scrollbar-thumb-rounded-md h-[42px]'
           >
             {messages.map(({ id, sender, content, color, avatar }, index) => (
               <p
@@ -273,34 +279,61 @@ const Messaging = () => {
                   {sender}
                 </span>
                 <span className='mr-[6px] ml-[1px]'>:</span>
-                <span>{content}</span>
+                <span className='break-words'>{content}</span>
               </p>
             ))}
           </div>
 
-          <div className='bg-input rounded-lg mx-2 py-3 px-4'>
-            <textarea
+          <div className='bg-input rounded-lg mx-2'>
+            {/* <textarea
               ref={inputRef}
               placeholder='Send a message'
               onChange={onInputChange}
               onKeyDown={onInputPress}
               onKeyUp={textAreaAdjust}
               value={inputMessage}
-              className='text-sm w-full bg-transparent min-h-[10px] outline-none placeholder:text-gray-300 
-              resize-none leading-[1.3] h-[17px] scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+              className='text-sm w-full bg-transparent min-h-[10px] outline-none py-3 px-4 placeholder:text-gray-300  
+              resize-none leading-[1.3] scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+              scrollbar-thumb-rounded-md'
+            /> */}
+            <input
+              ref={inputRef}
+              placeholder='Send a message'
+              onChange={onInputChange}
+              onKeyDown={onInputPress}
+              value={inputMessage}
+              className='text-sm w-full bg-transparent min-h-[10px] outline-none py-3 px-4 placeholder:text-gray-300  
+              resize-none leading-[1.3] scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
               scrollbar-thumb-rounded-md'
             />
+            {/* <TextareaAutosize
+              ref={inputRef}
+              autoFocus
+              placeholder='Send a message'
+              className='text-sm w-full bg-transparent min-h-[10px] outline-none py-3 px-4 placeholder:text-gray-300  
+              resize-none leading-[1.3] scrollbar scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thin 
+              scrollbar-thumb-rounded-md'
+              onKeyDown={onInputPress}
+              onChange={onInputChange}
+              onKeyUp={textAreaAdjust}
+              value={inputMessage}
+              minRows={1}
+              maxRows={4}
+            /> */}
           </div>
 
-          <button onClick={cleanup}>Leave Chat</button>
+          {/* <button onClick={cleanup}>Leave Chat</button> */}
         </>
       ) : (
-        <button
-          onClick={loginChat}
-          className='bg-green-300 px-4 py-1 rounded-lg'
-        >
-          Join Chat
-        </button>
+        //  {/* <button
+        //    onClick={loginChat}
+        //    className='bg-green-300 px-4 py-1 rounded-lg'
+        //  >
+        //    Join Chat
+        //  </button> */}
+        <div className='h-full w-full'>
+          <p className='text-sm'>Joining chat...</p>
+        </div>
       )}
     </div>
   )

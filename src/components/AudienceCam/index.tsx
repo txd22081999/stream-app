@@ -23,49 +23,61 @@ const AudienceCam = (props: IAudienceCCamProps) => {
   const isHost: boolean = roleInRoom?.role === EClientRole.HOST
 
   useEffect(() => {
-    const initializeCam = async (roomName: string) => {
-      console.log('initialize Audience Cam')
-
-      client.on('user-published', async (user, mediaType) => {
-        console.log('SUBCRIBE REMOTE')
-        await client.subscribe(user, mediaType)
-        user.audioTrack?.play()
-        user.videoTrack?.play('stream-box', { fit: 'cover', mirror: true })
-        setHostUser(user)
-      })
-
-      client.on('stream-type-changed', (uid, streamType) => {
-        console.log(uid, streamType)
-      })
-
-      client.on('user-joined', async (user) => {
-        console.log(user)
-      })
-
-      client.on('user-unpublished', async (user, mediaType) => {
-        console.log('User unpublished')
-
-        // if (mediaType === 'audio') {
-        //   if (user.audioTrack) user.audioTrack.stop()
-        // }
-        // if (mediaType === 'video') {
-        //   if (user.videoTrack) user.videoTrack.stop()
-        // }
-        // await client.unsubscribe(user, mediaType)
-      })
-
-      client.on('user-left', (user) => {})
-
-      await getNewToken(roomName)
-      if (!start) setStart(true)
-    }
-
     try {
       initializeCam(roomName)
     } catch (error) {
       console.log(error)
     }
+
+    window.addEventListener('beforeunload', () => {
+      cleanup()
+    })
+
+    return () => {
+      cleanup()
+    }
   }, [client])
+
+  function cleanup() {
+    client.leave()
+  }
+
+  async function initializeCam(roomName: string) {
+    console.log('initialize Audience Cam')
+
+    client.on('user-published', async (user, mediaType) => {
+      console.log('SUBCRIBE REMOTE')
+      await client.subscribe(user, mediaType)
+      user.audioTrack?.play()
+      user.videoTrack?.play('stream-box', { fit: 'cover', mirror: true })
+      setHostUser(user)
+    })
+
+    client.on('stream-type-changed', (uid, streamType) => {
+      console.log(uid, streamType)
+    })
+
+    client.on('user-joined', async (user) => {
+      console.log(user)
+    })
+
+    client.on('user-unpublished', async (user, mediaType) => {
+      console.log('User unpublished')
+
+      // if (mediaType === 'audio') {
+      //   if (user.audioTrack) user.audioTrack.stop()
+      // }
+      // if (mediaType === 'video') {
+      //   if (user.videoTrack) user.videoTrack.stop()
+      // }
+      // await client.unsubscribe(user, mediaType)
+    })
+
+    client.on('user-left', (user) => {})
+
+    await getNewToken(roomName)
+    if (!start) setStart(true)
+  }
 
   async function getNewToken(roomName: string) {
     try {
@@ -96,26 +108,9 @@ const AudienceCam = (props: IAudienceCCamProps) => {
         )}
       </div>
     )
-
-    // return (
-    //   <div className='h-full flex flex-col'>
-    //     <div className='video-list flex-1 grid'>
-    //       <AgoraVideoPlayer videoTrack={tracks[1]} className='h-full w-full' />
-    //     </div>
-    //     <Controls
-    //       client={client}
-    //       tracks={tracks}
-    //       publish={publish}
-    //       unpublish={unpublish}
-    //       isHost={isHost}
-    //       isScreen={isScreen}
-    //       switchShareMode={switchShareMode}
-    //     />
-    //   </div>
-    // )
   }
 
-  return <p>Error in loading stream</p>
+  return <p className='text-sm'>Can not load stream</p>
 }
 
 export default AudienceCam

@@ -34,10 +34,10 @@ const Stream = (props: any) => {
   }
 
   return (
-    <div className='bg-black-main'>
-      <h2>Room: {roomName}</h2>
+    <div className='bg-black-main pt-2'>
+      <h2 className='text-xl mb-2 mx-2'>{roomName}</h2>
 
-      <div className='video-container h-[90vh]'>
+      <div className='video-container h-[87.6vh]'>
         {isHost && !isScreen && (
           <HostCam
             client={client}

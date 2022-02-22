@@ -50,7 +50,7 @@ const Main = () => {
       <div className='video-list-area'>
         <Stream />
       </div>
-      <div className='messaging-area h-full'>
+      <div className='messaging-area h-[93vh]'>
         <Messaging />
       </div>
     </div>

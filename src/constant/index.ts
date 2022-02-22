@@ -40,7 +40,9 @@ const Color = {
   red: '#F94801',
   blue: '#1C91FF',
   pink: '#FF68B3',
-  green: '#027F02',
+  green: '##00b900',
+  yellow: '#eded00',
+  orange: '#ffa500',
 }
 
 export const colorList: string[] = [
@@ -48,6 +50,8 @@ export const colorList: string[] = [
   Color.blue,
   Color.pink,
   Color.green,
+  Color.yellow,
+  Color.orange,
 ]
 
 export const avatarList: IAvatar[] = [
@@ -81,11 +85,11 @@ export const avatarList: IAvatar[] = [
   },
   {
     id: 8,
-    src: 'dog',
+    src: 'monkey',
   },
   {
     id: 9,
-    src: 'monkey',
+    src: 'doddle',
   },
   {
     id: 10,
@@ -123,49 +127,6 @@ export const thumbnailList: IThumbnail[] = [
     src: 'valorant',
   },
 ]
-
-// export const avatarList: IAvatar[] = [
-//   {
-//     id: 1,
-//     src: 'https://external-preview.redd.it/QsbFEXU3kYHClCZpaX54zZu6DEvwA4VHpTHThT8P12A.jpg?width=640&crop=smart&auto=webp&s=c9f5cfd173849c57b48990863070a1e8ede4eef8',
-//   },
-//   {
-//     id: 2,
-//     src: 'https://arweave.net/aw4Audy2J_uuo3WIPQt-MopywNXrv4kIBiEVnd2wpyU',
-//   },
-//   {
-//     id: 3,
-//     src: 'https://miro.medium.com/max/980/1*3iesg_sr8kC6NYN2iiFHRQ.png',
-//   },
-//   {
-//     id: 4,
-//     src: 'http://www.playtoearn.online/wp-content/uploads/2021/10/Clone-X-NFT-avatar.png',
-//   },
-//   {
-//     id: 5,
-//     src: 'https://www.ultcube88.com/wp-content/uploads/2021/08/cat.jpg',
-//   },
-//   {
-//     id: 6,
-//     src: 'https://i.pinimg.com/474x/f5/e2/f0/f5e2f0ef7382530a23c194694d54a437.jpg',
-//   },
-//   {
-//     id: 7,
-//     src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzwfx03ZI7-yUieuEdBJ6VOlE5Y4f0-uobVvyHRS05yxdPJLiwsj_Mg17EoMzxhu3C2pE&usqp=CAU',
-//   },
-//   {
-//     id: 8,
-//     src: 'https://lh3.googleusercontent.com/Zm1-41EJs0evQCDm8QFpOGkweOZKrkBuE8B7sjrWCRqCmvAf8E69p5y2N3owqaiaRVyWWNe_MqCZ7HfZ04cgLjufVcnVaRRCIa0evw=w60',
-//   },
-//   {
-//     id: 9,
-//     src: 'https://cloudfront-us-east-2.images.arcpublishing.com/reuters/43YAWLITTZJLZIQTCP2JSS4KSM.jpg',
-//   },
-//   {
-//     id: 10,
-//     src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu-l0MxzVVrzoYNu2O9WYlUCKjklSxFyFC1tiIOhwlKBjWBrDRdfSS8GqNxBBBJoxz0Vw&usqp=CAU',
-//   },
-// ]
 
 export const buttonStyle: string = `w-full bg-purple-custom text-white font-medium py-2 cursor-pointer text-base
 rounded-md transition-[background] duration-150 ease-in hover:bg-purple-600 focus:outline-none`

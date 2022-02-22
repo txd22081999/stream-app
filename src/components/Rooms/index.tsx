@@ -220,6 +220,10 @@ const Rooms = () => {
 
       {loading ? (
         <Loading loading={loading} />
+      ) : rooms.length === 0 ? (
+        <p className='text-sm'>
+          There are currently no rooms available. Create new one!
+        </p>
       ) : (
         <div className='hello flex flex-wrap gap-x-6 gap-y-4 w-full overflow-x-hidden'>
           {/* {dumbRooms.map( */}
