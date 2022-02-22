@@ -18,16 +18,21 @@ import {
   IMicrophoneAudioTrack,
   ICameraVideoTrack,
   ILocalVideoTrack,
+  IRemoteVideoTrack,
 } from 'agora-rtc-sdk-ng'
+import { videoConfig } from 'constant'
 
 interface IControlsProps {
   client: IAgoraRTCClient
-  tracks: [IMicrophoneAudioTrack, ICameraVideoTrack] | ILocalVideoTrack
+  tracks:
+    | [IMicrophoneAudioTrack, ICameraVideoTrack]
+    | ILocalVideoTrack
+    | IRemoteVideoTrack
   isHost: boolean
   isScreen: boolean
-  publish: () => void
-  unpublish: () => void
-  switchShareMode: () => void
+  publish?: () => void
+  unpublish?: () => void
+  switchShareMode?: () => void
 }
 
 export default function Controls(props: IControlsProps) {
@@ -56,7 +61,21 @@ export default function Controls(props: IControlsProps) {
       if (Array.isArray(tracks)) {
         await tracks[1].setEnabled(!trackState.video)
       } else {
-        await tracks.setEnabled(!trackState.video)
+        if ('setEnabled' in tracks) {
+          await tracks.setEnabled(!trackState.video)
+        } else {
+          trackState.video
+            ? await tracks.stop()
+            : await tracks.play('stream-box', { fit: 'cover', mirror: true })
+        }
+
+        // // LocalTrack
+        // if ('setEnabled' in tracks) {
+        // }
+        // // RemoteTrack
+        // else {
+        //   await tracks.stop()
+        // }
       }
       setTrackState((ps) => {
         return { ...ps, video: !ps.video }
@@ -71,14 +90,21 @@ export default function Controls(props: IControlsProps) {
       tracks[0].close()
       tracks[1].close()
     } else {
-      tracks.close()
+      // LocalTrack
+      if ('close' in tracks) {
+        tracks.close()
+      }
+      // RemoteTrack
+      else {
+        tracks.stop()
+      }
     }
     navigate('/room')
   }
 
   async function stopStream() {
-    if (isPublised) unpublish()
-    else publish()
+    if (isPublised) unpublish && unpublish()
+    else publish && publish()
     setIsPubished((published) => !published)
   }
 
@@ -87,17 +113,20 @@ export default function Controls(props: IControlsProps) {
   return (
     <div className='w-full mt-2 '>
       <div className='flex items-center gap-4 mx-auto w-fit px-6 py-2'>
-        <button
-          onClick={() => mute('audio')}
-          data-tip={trackState.audio ? 'On Mic' : 'Off Mic'}
-          className='px-2 py-2 bg-input rounded-md'
-        >
-          {trackState.audio ? (
-            <BsMicFill className={clsx(iconSize, 'text-dark-white ')} />
-          ) : (
-            <BsMicMuteFill className={clsx(iconSize, 'text-dark-white ')} />
-          )}
-        </button>
+        {isHost && (
+          <button
+            onClick={() => mute('audio')}
+            data-tip={trackState.audio ? 'On Mic' : 'Off Mic'}
+            className='px-2 py-2 bg-input rounded-md'
+          >
+            {trackState.audio ? (
+              <BsMicFill className={clsx(iconSize, 'text-dark-white ')} />
+            ) : (
+              <BsMicMuteFill className={clsx(iconSize, 'text-dark-white ')} />
+            )}
+          </button>
+        )}
+
         <button
           onClick={() => mute('video')}
           data-tip={trackState.video ? 'On Video' : 'Off Video'}
@@ -113,25 +142,31 @@ export default function Controls(props: IControlsProps) {
             />
           )}
         </button>
-        <button
-          onClick={switchShareMode}
-          data-tip={isScreen ? 'On Screen' : 'On Canera'}
-          className='px-2 py-2 bg-input rounded-md'
-        >
-          {isScreen ? (
-            <MdOutlineMonitor className={clsx(iconSize, 'text-dark-white ')} />
-          ) : (
-            <BiWebcam className={clsx(iconSize, 'text-dark-white ')} />
-          )}
-        </button>
+
         {isHost && (
-          <button
-            onClick={stopStream}
-            className='flex items-center px-2 py-2 bg-input rounded-md'
-            data-tip='Stop Stream'
-          >
-            <FaStop className={clsx(iconSize, 'text-red-500 block ')} />
-          </button>
+          <>
+            <button
+              onClick={switchShareMode}
+              data-tip={isScreen ? 'On Screen' : 'On Canera'}
+              className='px-2 py-2 bg-input rounded-md'
+            >
+              {isScreen ? (
+                <MdOutlineMonitor
+                  className={clsx(iconSize, 'text-dark-white ')}
+                />
+              ) : (
+                <BiWebcam className={clsx(iconSize, 'text-dark-white ')} />
+              )}
+            </button>
+
+            <button
+              onClick={stopStream}
+              className='flex items-center px-2 py-2 bg-input rounded-md'
+              data-tip='Stop Stream'
+            >
+              <FaStop className={clsx(iconSize, 'text-red-500 block ')} />
+            </button>
+          </>
         )}
         <button
           onClick={leaveChannel}

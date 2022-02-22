@@ -1,7 +1,10 @@
 import { IAgoraRTCClient, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng'
+import Controls from 'components/Controls'
 import { appId } from 'constant'
+import { EClientRole } from 'enum'
 import { useEffect, useState } from 'react'
 import { useRoomStore, useUserStore } from 'store'
+import { IClientRoleState } from 'store/room-store'
 import { generateRTCToken } from 'utils/generate-token'
 
 interface IAudienceCCamProps {
@@ -11,9 +14,13 @@ interface IAudienceCCamProps {
 const AudienceCam = (props: IAudienceCCamProps) => {
   const { client } = props
   const { rtcToken, setRtcToken } = useUserStore()
-  const { roomName } = useRoomStore()
+  const { roomName, roles } = useRoomStore()
   const [hostUser, setHostUser] = useState<IAgoraRTCRemoteUser | null>(null)
   const [start, setStart] = useState(false)
+  const roleInRoom: IClientRoleState | undefined = roles.find(
+    (item) => item.roomName === roomName
+  )
+  const isHost: boolean = roleInRoom?.role === EClientRole.HOST
 
   useEffect(() => {
     const initializeCam = async (roomName: string) => {
@@ -23,7 +30,7 @@ const AudienceCam = (props: IAudienceCCamProps) => {
         console.log('SUBCRIBE REMOTE')
         await client.subscribe(user, mediaType)
         user.audioTrack?.play()
-        user.videoTrack?.play('stream-box')
+        user.videoTrack?.play('stream-box', { fit: 'cover', mirror: true })
         setHostUser(user)
       })
 
@@ -73,12 +80,39 @@ const AudienceCam = (props: IAudienceCCamProps) => {
 
   if (hostUser) {
     return (
-      <div className='video-list h-full grid'>
+      <div className='h-full flex flex-col'>
         {hostUser.videoTrack && (
-          <div id='stream-box' className='h-full w-full bg-slate-800'></div>
+          <>
+            <div className='video-list flex-1 grid h-full'>
+              <div id='stream-box' className='h-full w-full bg-slate-800'></div>
+            </div>
+            <Controls
+              client={client}
+              tracks={hostUser.videoTrack}
+              isHost={isHost}
+              isScreen={false}
+            />
+          </>
         )}
       </div>
     )
+
+    // return (
+    //   <div className='h-full flex flex-col'>
+    //     <div className='video-list flex-1 grid'>
+    //       <AgoraVideoPlayer videoTrack={tracks[1]} className='h-full w-full' />
+    //     </div>
+    //     <Controls
+    //       client={client}
+    //       tracks={tracks}
+    //       publish={publish}
+    //       unpublish={unpublish}
+    //       isHost={isHost}
+    //       isScreen={isScreen}
+    //       switchShareMode={switchShareMode}
+    //     />
+    //   </div>
+    // )
   }
 
   return <p>Error in loading stream</p>
