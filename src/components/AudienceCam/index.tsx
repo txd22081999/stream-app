@@ -48,7 +48,7 @@ const AudienceCam = (props: IAudienceCCamProps) => {
     client.on('user-published', async (user, mediaType) => {
       await client.subscribe(user, mediaType)
       user.audioTrack?.play()
-      user.videoTrack?.play('stream-box', { fit: 'cover', mirror: true })
+      user.videoTrack?.play('stream-box', { fit: 'cover', mirror: false })
       setHostUser(user)
     })
 

@@ -13,8 +13,9 @@ const Main = () => {
   return (
     <div
       className={cx(
-        'stream-container grid grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] h-full gap-1',
-        'h-[calc(100&-72px)]'
+        `stream-container grid md:grid-cols-[minmax(150px,200px)_minmax(600px,_1fr)_minmax(200px,300px)] 
+        h-full gap-1 grid-cols-1 grid-rows-[200px_100vw_170px] md:grid-rows-1`
+        // 'h-[calc(100%-72px)]'
       )}
     >
       <div className='flex flex-col'>
@@ -30,7 +31,7 @@ const Main = () => {
           {audiences.map(({ id, avatar }) => {
             const isMe: boolean = id === userName
             return (
-              <div key={id} className='flex items-center px-2 mb-3 '>
+              <div key={id} className='flex items-center px-2 mb-3'>
                 <img
                   src={getAvatarPath(avatar)}
                   alt='avatar'
@@ -47,10 +48,10 @@ const Main = () => {
           })}
         </div>
       </div>
-      <div className='video-list-area'>
+      <div className='video-list-area h-full'>
         <Stream />
       </div>
-      <div className='messaging-area h-[93vh]'>
+      <div className='messaging-area md:h-[93vh] h-full'>
         <Messaging />
       </div>
     </div>

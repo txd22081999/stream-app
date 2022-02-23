@@ -66,7 +66,7 @@ export default function Controls(props: IControlsProps) {
         } else {
           trackState.video
             ? await tracks.stop()
-            : await tracks.play('stream-box', { fit: 'cover', mirror: true })
+            : await tracks.play('stream-box', { fit: 'cover', mirror: false })
         }
 
         // // LocalTrack
